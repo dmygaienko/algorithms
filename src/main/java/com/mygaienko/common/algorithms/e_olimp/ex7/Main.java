@@ -1,6 +1,5 @@
 package com.mygaienko.common.algorithms.e_olimp.ex7;
 
-import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -8,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import static org.junit.Assert.assertEquals;
 
 /*  Римские числа
 
@@ -95,24 +93,5 @@ public class Main {
         return result;
     }
 
-    @Test
-    public void testGetInt() {
-        assertEquals(3, Main.getInt("III"));
-        assertEquals(1600, Main.getInt("MDC"));
-    }
 
-    @Test
-    public void testExecute7() {
-        assertEquals("VII", Main.execute("III+IV"));
-    }
-
-    @Test
-    public void testExecute19() {
-        assertEquals("XVIIII", Main.execute("III+XVI"));
-    }
-
-    @Test
-    public void testExecute4() {
-        assertEquals("IV", Main.execute("II+II"));
-    }
 }

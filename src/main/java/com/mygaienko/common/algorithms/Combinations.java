@@ -1,7 +1,5 @@
 package com.mygaienko.common.algorithms;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,10 +55,6 @@ public class Combinations {
         return result;
     }
 
-    @Test
-    public void testCountSubsets() {
-        int[] input = {10, 20, 30, 40, 50};    // input array
-        countSubsets(3, input);
-    }
+
 
 }
