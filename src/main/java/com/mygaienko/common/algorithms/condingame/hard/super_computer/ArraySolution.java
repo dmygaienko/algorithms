@@ -51,11 +51,14 @@ public class ArraySolution {
         System.err.println(requests);
 
         LongAdder quantity = new LongAdder();
-//        satisfyRequests(quantity, requests);
 
-
-        // Write an answer using System.out.println()
-        // To debug: System.err.println("Debug messages...");
+        int nextOpenDay = 1;
+        for (Request request : requests) {
+            if (request.startDay >= nextOpenDay) {
+                nextOpenDay = request.startDay + request.duration;
+                quantity.increment();
+            }
+        }
 
         System.out.println(quantity);
     }
