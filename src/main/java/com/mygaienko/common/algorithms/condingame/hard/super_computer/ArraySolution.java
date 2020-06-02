@@ -53,7 +53,7 @@ public class ArraySolution {
         Request request = requests.get(requests.size() - 1);
         Period period = findShortTimeRequest(requests, 0, 0, request.startDay + request.duration);
 
-        System.out.println(period.quantity + 1);
+        System.out.println(period.quantity);
     }
 
     private static Period findShortTimeRequest(List<Request> requests, int i, int startDate,int endDate) {
