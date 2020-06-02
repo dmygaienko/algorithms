@@ -51,7 +51,7 @@ public class ArraySolution {
         System.err.println(requests);
 
         Request request = requests.get(requests.size() - 1);
-        Period period = findShortTimeRequest(requests, 0, 0, request.startDay + request.duration);
+        Period period = findShortTimeRequest(requests, 0, 0, request.getNextOpenDay());
 
         System.out.println(period.quantity);
     }
@@ -64,9 +64,9 @@ public class ArraySolution {
         for ( ; i < requests.size() && requests.get(i).startDay < endDate; i++) {
             Request request = requests.get(i);
 
-            if (request.startDay >= nextOpenDay && request.getNextOpenDay() <= endDate) {
-
+            if (request.startDay >= nextOpenDay && request.getNextOpenDay() <= endDate + 1) {
                 nextOpenDay = request.getNextOpenDay();
+
 
                 if (request.duration > 2) {
                     Period period = findShortTimeRequest(requests, i + 1, request.startDay + 1, nextOpenDay);
@@ -106,6 +106,15 @@ public class ArraySolution {
 
         public int getRequestOrder() {
             return requestOrder;
+        }
+
+        @Override
+        public String toString() {
+            return "Period{" +
+                    "endDay=" + endDay +
+                    ", quantity=" + quantity +
+                    ", requestOrder=" + requestOrder +
+                    '}';
         }
     }
 
