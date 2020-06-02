@@ -28,7 +28,7 @@ public class SolutionTest {
 
     private void test(String inputs) {
         System.setIn(new ByteArrayInputStream(inputs.getBytes(UTF_8)));
-        ArraySolution.main(new String[]{});
+        Solution.main(new String[]{});
     }
 
     private String getGameInput() {
@@ -61,7 +61,7 @@ public class SolutionTest {
     public void testLargeNumberOfScientists() throws Exception {
         InputStream inputStream = getClass().getResourceAsStream("large_number_of_scientists.txt");
         System.setIn(inputStream);
-        ArraySolution.main(new String[]{});
+        Solution.main(new String[]{});
     }
 
 }

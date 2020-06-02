@@ -1,9 +1,11 @@
 package com.mygaienko.common.algorithms.condingame.hard.super_computer;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.LongAdder;
+
+import static java.util.Comparator.comparing;
 
 /**
  *
@@ -41,47 +43,114 @@ public class Solution {
         Scanner in = new Scanner(System.in);
         int N = in.nextInt();
 
-        TreeMap<Integer, Integer> requests = new TreeMap<>();
+        int maxEndDay = 0;
+
+        List<Request> requests = new ArrayList<>();
         for (int i = 0; i < N; i++) {
-            int startDay = in.nextInt();
-            int duration = in.nextInt();
-            requests.compute(startDay, (k, v) -> (v == null) ? duration : Math.min(v, duration));
+            Request request = new Request(in.nextInt(), in.nextInt());
+            if (maxEndDay < request.getNextOpenDay()) {
+                maxEndDay = request.getNextOpenDay();
+            }
+            requests.add(request);
         }
+        requests.sort(comparing(Request::getStartDay).thenComparing(Request::getDuration));
         System.err.println(requests);
 
+        Request request = requests.get(requests.size() - 1);
+        Period period = findShortTimeRequest(requests, 0, 0, request.getNextOpenDay());
+
+        System.out.println(period.quantity);
+    }
+
+    private static Period findShortTimeRequest(List<Request> requests, int i, int startDate,int endDate) {
         LongAdder quantity = new LongAdder();
-        satisfyRequests(quantity, requests);
+
+        int nextOpenDay = startDate;
+
+        for ( ; i < requests.size() && requests.get(i).startDay < endDate; i++) {
+            Request request = requests.get(i);
+
+            if (request.startDay >= nextOpenDay && request.getNextOpenDay() <= endDate + 1) {
+                nextOpenDay = request.getNextOpenDay();
 
 
-        // Write an answer using System.out.println()
-        // To debug: System.err.println("Debug messages...");
+                if (request.duration > 2) {
+                    Period period = findShortTimeRequest(requests, i + 1, request.startDay + 1, nextOpenDay);
+                    if (period.quantity > 1) {
+                        nextOpenDay = period.endDay;
+                        quantity.add(period.quantity);
+                        i = period.requestOrder;
+                        continue;
+                    }
 
-        System.out.println(quantity);
-    }
-
-    private static void satisfyRequests(LongAdder quantity, TreeMap<Integer, Integer> requests) {
-        Map.Entry<Integer, Integer> startDayEntry = requests.firstEntry();
-        satisfyRequest(quantity, startDayEntry.getKey(), startDayEntry, requests);
-    }
-
-    private static void satisfyRequest(LongAdder quantity, Integer nextOpenDay, Map.Entry<Integer, Integer> requestDayEntry,
-                                       TreeMap<Integer, Integer> requests) {
-        Integer day = requestDayEntry.getKey();
-
-        boolean isOpen = false;
-        if (day >= nextOpenDay) {
-            quantity.increment();
-            isOpen = true;
+                }
+                quantity.increment();
+            }
         }
 
-        Map.Entry<Integer, Integer> nextRequestDayEntry = requests.higherEntry(day);
+        return new Period(nextOpenDay, quantity.intValue(), i);
+    }
 
-        if (nextRequestDayEntry != null) {
-            if (isOpen) {
-                nextOpenDay = day + requestDayEntry.getValue();
-            }
+    public static class Period {
+        final int endDay;
+        final int quantity;
+        final int requestOrder;
 
-            satisfyRequest(quantity, nextOpenDay, nextRequestDayEntry, requests);
+        public Period(int endDay, int quantity, int requestOrder) {
+            this.endDay = endDay;
+            this.quantity = quantity;
+            this.requestOrder = requestOrder;
+        }
+
+        public int getEndDay() {
+            return endDay;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public int getRequestOrder() {
+            return requestOrder;
+        }
+
+        @Override
+        public String toString() {
+            return "Period{" +
+                    "endDay=" + endDay +
+                    ", quantity=" + quantity +
+                    ", requestOrder=" + requestOrder +
+                    '}';
+        }
+    }
+
+    public static class Request {
+        final int startDay;
+        final int duration;
+
+        public Request(int startDay, int duration) {
+            this.startDay = startDay;
+            this.duration = duration;
+        }
+
+        public int getStartDay() {
+            return startDay;
+        }
+
+        public int getDuration() {
+            return duration;
+        }
+
+        @Override
+        public String toString() {
+            return "Request{" +
+                    "startDay=" + startDay +
+                    ", duration=" + duration +
+                    '}';
+        }
+
+        public int getNextOpenDay() {
+            return startDay + duration;
         }
     }
 
