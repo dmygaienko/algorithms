@@ -64,9 +64,9 @@ public class ArraySolution {
         for ( ; i < requests.size() && requests.get(i).startDay < endDate; i++) {
             Request request = requests.get(i);
 
-            if (request.startDay >= nextOpenDay && request.startDay + request.duration <= endDate) {
+            if (request.startDay >= nextOpenDay && request.getNextOpenDay() <= endDate) {
 
-                nextOpenDay = request.startDay + request.duration;
+                nextOpenDay = request.getNextOpenDay();
 
                 if (request.duration > 2) {
                     Period period = findShortTimeRequest(requests, i + 1, request.startDay + 1, nextOpenDay);
@@ -132,6 +132,10 @@ public class ArraySolution {
                     "startDay=" + startDay +
                     ", duration=" + duration +
                     '}';
+        }
+
+        public int getNextOpenDay() {
+            return startDay + duration;
         }
     }
 

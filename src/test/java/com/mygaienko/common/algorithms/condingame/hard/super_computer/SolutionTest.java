@@ -3,7 +3,9 @@ package com.mygaienko.common.algorithms.condingame.hard.super_computer;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class SolutionTest {
@@ -11,7 +13,7 @@ public class SolutionTest {
     @Test
     public void test() throws Exception {
         String inputs = getGameInput1();
-        System.setIn(new ByteArrayInputStream(inputs.getBytes(StandardCharsets.UTF_8)));
+        System.setIn(new ByteArrayInputStream(inputs.getBytes(UTF_8)));
         ArraySolution.main(new String[]{});
     }
 
@@ -31,6 +33,13 @@ public class SolutionTest {
                 "9 2\n" +
                 "16 9\n" +
                 "24 5";
+    }
+
+    @Test
+    public void testLargeNumberOfScientists() throws Exception {
+        InputStream inputStream = getClass().getResourceAsStream("large_number_of_scientists.txt");
+        System.setIn(inputStream);
+        ArraySolution.main(new String[]{});
     }
 
 }
