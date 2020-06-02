@@ -43,9 +43,15 @@ public class ArraySolution {
         Scanner in = new Scanner(System.in);
         int N = in.nextInt();
 
+        int maxEndDay = 0;
+
         List<Request> requests = new ArrayList<>();
         for (int i = 0; i < N; i++) {
-            requests.add(new Request(in.nextInt(), in.nextInt()));
+            Request request = new Request(in.nextInt(), in.nextInt());
+            if (maxEndDay < request.getNextOpenDay()) {
+                maxEndDay = request.getNextOpenDay();
+            }
+            requests.add(request);
         }
         requests.sort(comparing(Request::getStartDay).thenComparing(Request::getDuration));
         System.err.println(requests);

@@ -11,13 +11,27 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class SolutionTest {
 
     @Test
-    public void test() throws Exception {
-        String inputs = getGameInput1();
+    public void testGameInput() throws Exception {
+        test(getGameInput());
+    }
+
+    @Test
+    public void testGameInput1() throws Exception {
+        test(getGameInput1());
+    }
+
+
+    @Test
+    public void testGameInput2() throws Exception {
+        test(getGameInput2());
+    }
+
+    private void test(String inputs) {
         System.setIn(new ByteArrayInputStream(inputs.getBytes(UTF_8)));
         ArraySolution.main(new String[]{});
     }
 
-    public String getGameInput() {
+    private String getGameInput() {
         return "4\n" +
                 "2 5\n" +
                 "9 7\n" +
@@ -25,14 +39,22 @@ public class SolutionTest {
                 "9 3";
     }
 
-    //{3=[5], 9=[2], 11=[6], 16=[9], 24=[5]}
-    public String getGameInput1() {
+    private String getGameInput1() {
         return "5\n" +
                 "3 5\n" +
                 "11 6\n" +
                 "9 2\n" +
                 "16 9\n" +
                 "24 5";
+    }
+
+    private String getGameInput2() {
+        return "5\n" +
+                "1 10\n" +
+                "2 6\n" +
+                "3 2\n" +
+                "5 2\n" +
+                "7 2";
     }
 
     @Test
