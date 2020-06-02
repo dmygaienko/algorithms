@@ -50,17 +50,63 @@ public class ArraySolution {
         requests.sort(comparing(Request::getStartDay).thenComparing(Request::getDuration));
         System.err.println(requests);
 
+        Request request = requests.get(requests.size() - 1);
+        Period period = findShortTimeRequest(requests, 0, 0, request.startDay + request.duration);
+
+        System.out.println(period.quantity + 1);
+    }
+
+    private static Period findShortTimeRequest(List<Request> requests, int i, int startDate,int endDate) {
         LongAdder quantity = new LongAdder();
 
-        int nextOpenDay = 1;
-        for (Request request : requests) {
-            if (request.startDay >= nextOpenDay) {
+        int nextOpenDay = startDate;
+
+        for ( ; i < requests.size() && requests.get(i).startDay < endDate; i++) {
+            Request request = requests.get(i);
+
+            if (request.startDay >= nextOpenDay && request.startDay + request.duration <= endDate) {
+
                 nextOpenDay = request.startDay + request.duration;
+
+                if (request.duration > 2) {
+                    Period period = findShortTimeRequest(requests, i + 1, request.startDay + 1, nextOpenDay);
+                    if (period.quantity > 1) {
+                        nextOpenDay = period.endDay;
+                        quantity.add(period.quantity);
+                        i = period.requestOrder;
+                        continue;
+                    }
+
+                }
                 quantity.increment();
             }
         }
 
-        System.out.println(quantity);
+        return new Period(nextOpenDay, quantity.intValue(), i);
+    }
+
+    public static class Period {
+        final int endDay;
+        final int quantity;
+        final int requestOrder;
+
+        public Period(int endDay, int quantity, int requestOrder) {
+            this.endDay = endDay;
+            this.quantity = quantity;
+            this.requestOrder = requestOrder;
+        }
+
+        public int getEndDay() {
+            return endDay;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public int getRequestOrder() {
+            return requestOrder;
+        }
     }
 
     public static class Request {
