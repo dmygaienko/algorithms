@@ -43,94 +43,37 @@ public class Solution {
         Scanner in = new Scanner(System.in);
         int N = in.nextInt();
 
-        int maxEndDay = 0;
-
         List<Request> requests = new ArrayList<>();
         for (int i = 0; i < N; i++) {
             Request request = new Request(in.nextInt(), in.nextInt());
-            if (maxEndDay < request.getNextOpenDay()) {
-                maxEndDay = request.getNextOpenDay();
-            }
             requests.add(request);
         }
-        requests.sort(comparing(Request::getStartDay).thenComparing(Request::getDuration));
-        System.err.println(requests);
 
-        Request request = requests.get(requests.size() - 1);
-        Period period = findShortTimeRequest(requests, 0, 0, request.getNextOpenDay());
+        requests.sort(comparing(Request::getNextOpenDay));
 
-        System.out.println(period.quantity);
-    }
+        int nextOpenDay = 0;
+        int count = 0;
+        for (Request request : requests) {
 
-    private static Period findShortTimeRequest(List<Request> requests, int i, int startDate,int endDate) {
-        LongAdder quantity = new LongAdder();
-
-        int nextOpenDay = startDate;
-
-        for ( ; i < requests.size() && requests.get(i).startDay < endDate; i++) {
-            Request request = requests.get(i);
-
-            if (request.startDay >= nextOpenDay && request.getNextOpenDay() <= endDate + 1) {
+            if (request.getStartDay() >= nextOpenDay) {
                 nextOpenDay = request.getNextOpenDay();
-
-
-                if (request.duration > 2) {
-                    Period period = findShortTimeRequest(requests, i + 1, request.startDay + 1, nextOpenDay);
-                    if (period.quantity > 1) {
-                        nextOpenDay = period.endDay;
-                        quantity.add(period.quantity);
-                        i = period.requestOrder;
-                        continue;
-                    }
-
-                }
-                quantity.increment();
+                count++;
             }
         }
 
-        return new Period(nextOpenDay, quantity.intValue(), i);
-    }
-
-    public static class Period {
-        final int endDay;
-        final int quantity;
-        final int requestOrder;
-
-        public Period(int endDay, int quantity, int requestOrder) {
-            this.endDay = endDay;
-            this.quantity = quantity;
-            this.requestOrder = requestOrder;
-        }
-
-        public int getEndDay() {
-            return endDay;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public int getRequestOrder() {
-            return requestOrder;
-        }
-
-        @Override
-        public String toString() {
-            return "Period{" +
-                    "endDay=" + endDay +
-                    ", quantity=" + quantity +
-                    ", requestOrder=" + requestOrder +
-                    '}';
-        }
+        System.out.println(count);
     }
 
     public static class Request {
+
         final int startDay;
         final int duration;
+        final int nextOpenDay;
 
         public Request(int startDay, int duration) {
             this.startDay = startDay;
             this.duration = duration;
+            this.nextOpenDay = startDay + duration;
         }
 
         public int getStartDay() {
@@ -146,11 +89,12 @@ public class Solution {
             return "Request{" +
                     "startDay=" + startDay +
                     ", duration=" + duration +
+                    ", nextOpenDay=" + nextOpenDay +
                     '}';
         }
 
         public int getNextOpenDay() {
-            return startDay + duration;
+            return nextOpenDay;
         }
     }
 
