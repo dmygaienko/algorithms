@@ -2,7 +2,7 @@ package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;
 
 
 import java.util.*;
-
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -94,10 +94,6 @@ public class Player {
         public abstract State change();
     }
 
-    private static void jumpToPoint(Point center) {
-        System.out.println(center.getX()+ " " + center.getY());
-    }
-
     public static class Point {
 
         final int x;
@@ -125,6 +121,19 @@ public class Player {
             return y < center.y;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Point point = (Point) o;
+            return x == point.x &&
+                    y == point.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
     }
 
     public static class Map {
@@ -184,16 +193,36 @@ public class Player {
         return map;
     }
 
+    enum Action { KEEP_DIRECTION, CHANGE_DIRECTION }
+
     public static class Game {
         Map map;
         int maxTurns;
         Point position;
         State state;
 
+        int speed = 1;
+
+        Queue<Action> actionQueue = new LinkedBlockingQueue<>(2);
+
+        Queue<Action> allChanges = initAllChanges();
+
+        private LinkedBlockingQueue<Action> initAllChanges() {
+            LinkedBlockingQueue<Action> allChanges = new LinkedBlockingQueue<>(2);
+            allChanges.addAll(Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION));
+            return allChanges;
+        }
+
         public Game(Map map, int maxTurns, Point position) {
             this.map = map;
             this.maxTurns = maxTurns;
             this.position = position;
+
+        }
+
+        public boolean addToActionHistory(Action action){
+            actionQueue.poll();
+            return actionQueue.add(action);
         }
 
         public Map getMap() {
@@ -226,16 +255,62 @@ public class Player {
 
         public void goDirection(State state) {
             this.state = state;
-            this.position = state.jumpFromAndPrint(position, map);
+            Point nextPosition = state.jumpFromAndPrint(position, map);
+            safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void keepDirection() {
-            this.position = state.jumpFromAndPrint(position, map);
+            Point nextPosition = state.jumpFromAndPrint(position, map);
+            safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void changeDirection() {
+            if (actionQueue.equals(allChanges)) {
+                speed = speed/2;
+            }
             this.state = state.change();
-            this.position = state.jumpFromAndPrint(position, map);
+            Point nextPosition = state.jumpFromAndPrint(position, map);
+            safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
+        }
+
+        private Point goToEdge(Point position, Map map) {
+            int x = position.getX();
+            int y = position.getY();
+
+            if (x < 0) {
+                x = 0;
+            } else if (x >= map.getWidth()) {
+                x = map.getWidth() - 1;
+            }
+
+            if (y < 0) {
+                y = 0;
+            } else if (y >= map.getHeight()) {
+                y = map.getHeight() - 1;
+            }
+
+            return new Point(x, y);
+        }
+
+        private void safelyGoToPoint(Point nextPosition, Action keepDirection) {
+            if (notValid(nextPosition, map)) {
+                Point validNextPosition = goToEdge(position, map);
+
+                if (validNextPosition.equals(position)) {
+                    changeDirection();
+                }
+
+            } else {
+                position = nextPosition;
+                addToActionHistory(keepDirection);
+            }
+        }
+
+        private boolean notValid(Point position, Map map) {
+            return position.getX() < 0 ||
+                    position.getX() >= map.getWidth() ||
+                    position.getY() < 0 ||
+                    position.getY() >= map.getHeight();
         }
 
         @Override
@@ -246,7 +321,6 @@ public class Player {
                     ", position=" + position +
                     '}';
         }
-
 
     }
 
