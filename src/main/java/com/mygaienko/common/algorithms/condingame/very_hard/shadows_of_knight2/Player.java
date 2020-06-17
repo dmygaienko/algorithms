@@ -85,12 +85,6 @@ public class Player {
 
         abstract Point jumpFrom(Point previousPoint, Map map, Game game);
 
-        Point jumpFromAndPrint(Point previousPoint, Map map, Game game) {
-            Point nextPoint = jumpFrom(previousPoint, map, game);
-            System.out.println(nextPoint);
-            return nextPoint;
-        }
-
         public abstract State change();
     }
 
@@ -256,12 +250,12 @@ public class Player {
 
         public void goDirection(State state) {
             this.state = state;
-            Point nextPosition = state.jumpFromAndPrint(position, map, this);
+            Point nextPosition = state.jumpFrom(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void keepDirection() {
-            Point nextPosition = state.jumpFromAndPrint(position, map, this);
+            Point nextPosition = state.jumpFrom(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
@@ -270,7 +264,7 @@ public class Player {
                 speed = speed/2;
             }
             this.state = state.change();
-            Point nextPosition = state.jumpFromAndPrint(position, map, this);
+            Point nextPosition = state.jumpFrom(position, map, this);
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
         }
 
@@ -299,19 +293,26 @@ public class Player {
 
                 if (validNextPosition.equals(position)) {
                     changeDirection();
+                } else {
+                    position = validNextPosition;
                 }
+
 
             } else {
                 position = nextPosition;
+                System.out.println(position);
                 addToActionHistory(keepDirection);
             }
         }
 
         private boolean notValid(Point position, Map map) {
-            return position.getX() < 0 ||
+            boolean result = position.getX() < 0 ||
                     position.getX() >= map.getWidth() ||
                     position.getY() < 0 ||
                     position.getY() >= map.getHeight();
+
+            System.err.println("Position: " + position + " map: "  + map + " result: " + result);
+            return result;
         }
 
         @Override
