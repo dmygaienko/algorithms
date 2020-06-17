@@ -274,6 +274,7 @@ public class Player {
         }
 
         private Point goToEdge(Point position, Map map) {
+            System.err.println("goToEdge: position: " + position);
             int x = position.getX();
             int y = position.getY();
 
@@ -289,17 +290,24 @@ public class Player {
                 y = map.getHeight() - 1;
             }
 
-            return new Point(x, y);
+            Point point = new Point(x, y);
+            System.err.println("goToEdge: position: " + position + " point: " + point);
+            return point;
         }
 
         private void safelyGoToPoint(Point nextPosition, Action action) {
+            System.err.println("safelyGoToPoint: nextPosition: " + nextPosition + " action: " + action );
             if (notValid(nextPosition, map)) {
-                Point validNextPosition = goToEdge(position, map);
+                Point validNextPosition = goToEdge(nextPosition, map);
 
-                if (validNextPosition.equals(position)) {
+                boolean result = validNextPosition.equals(position);
+                System.err.println("validNextPosition: " + validNextPosition + " position: " + position + " result " + result );
+                if (result) {
                     changeDirection();
                 } else {
                     position = validNextPosition;
+                    System.out.println(position);
+                    addToActionHistory(action);
                 }
 
 
