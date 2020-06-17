@@ -20,7 +20,7 @@ public class Player {
 
             String bombDir = in.next(); // Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
 
-
+            System.err.println(bombDir);
             if ("UNKNOWN".equals(bombDir)) {
 
                 if (game.getPosition().isHigher(game.getMap().getCenter())) {
@@ -35,7 +35,7 @@ public class Player {
                 game.keepDirection();
             }
 
-            if ("COLDER".equals(bombDir)) {
+            if ("COLDER".equals(bombDir) || "SAME".equals(bombDir)) {
                 game.changeDirection();
             }
 
@@ -195,7 +195,7 @@ public class Player {
         Point position;
         State state;
 
-        int speed = 1;
+        int speed;
 
         Queue<Action> actionQueue = new LinkedBlockingQueue<>(2);
 
@@ -254,22 +254,26 @@ public class Player {
         }
 
         public void goDirection(State state) {
+            System.err.println("State: " + state);
             this.state = state;
             Point nextPosition = state.jumpFrom(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void keepDirection() {
+            System.err.println("keepDirection");
             Point nextPosition = state.jumpFrom(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void changeDirection() {
-            if (actionQueue.equals(allChanges)) {
+            System.err.println("changeDirection: actionQueue" + actionQueue);
+            if (actionQueue.containsAll(allChanges) && speed > 1) {
                 speed = speed/2;
             }
             this.state = state.change();
             Point nextPosition = state.jumpFrom(position, map, this);
+            System.err.println("changeDirection: nextPosition" + nextPosition);
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
         }
 
@@ -305,17 +309,19 @@ public class Player {
                 if (result) {
                     changeDirection();
                 } else {
-                    position = validNextPosition;
-                    System.out.println(position);
-                    addToActionHistory(action);
+                    printAndAddToHistory(action, validNextPosition);
                 }
 
 
             } else {
-                position = nextPosition;
-                System.out.println(position);
-                addToActionHistory(action);
+                printAndAddToHistory(action, nextPosition);
             }
+        }
+
+        private void printAndAddToHistory(Action action, Point validNextPosition) {
+            position = validNextPosition;
+            System.out.println(position);
+            addToActionHistory(action);
         }
 
         private boolean notValid(Point position, Map map) {
