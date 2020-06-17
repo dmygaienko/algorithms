@@ -216,8 +216,13 @@ public class Player {
         }
 
         public boolean addToActionHistory(Action action){
-            actionQueue.poll();
-            return actionQueue.add(action);
+            System.err.println("actionQueue: " + actionQueue + " new Action: " + action);
+            if (actionQueue.size() == 2) {
+                actionQueue.poll();
+            }
+            boolean add = actionQueue.add(action);
+            System.err.println("actionQueue: " + actionQueue);
+            return add;
         }
 
         public Map getMap() {
@@ -287,7 +292,7 @@ public class Player {
             return new Point(x, y);
         }
 
-        private void safelyGoToPoint(Point nextPosition, Action keepDirection) {
+        private void safelyGoToPoint(Point nextPosition, Action action) {
             if (notValid(nextPosition, map)) {
                 Point validNextPosition = goToEdge(position, map);
 
@@ -301,7 +306,7 @@ public class Player {
             } else {
                 position = nextPosition;
                 System.out.println(position);
-                addToActionHistory(keepDirection);
+                addToActionHistory(action);
             }
         }
 
