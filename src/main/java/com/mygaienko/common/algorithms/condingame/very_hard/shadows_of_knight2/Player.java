@@ -46,8 +46,8 @@ public class Player {
     enum State {
 
         UP {
-            Point jumpFrom(Point previousPoint, Map map) {
-                return new Point(previousPoint.getX(), previousPoint.getY() - map.getHeight()/4);
+            Point jumpFrom(Point previousPoint, Map map, Game game) {
+                return new Point(previousPoint.getX(), previousPoint.getY() - game.speed);
             }
 
             public State change() {
@@ -55,8 +55,8 @@ public class Player {
             }
         },
         DOWN {
-            Point jumpFrom(Point previousPoint, Map map) {
-                return new Point(previousPoint.getX(), previousPoint.getY() + map.getHeight()/4);
+            Point jumpFrom(Point previousPoint, Map map, Game game) {
+                return new Point(previousPoint.getX(), previousPoint.getY() + game.speed);
             }
 
             public State change() {
@@ -64,8 +64,8 @@ public class Player {
             }
         },
         RIGHT {
-            Point jumpFrom(Point previousPoint, Map map) {
-                return new Point(previousPoint.getX() + map.getWidth()/4, previousPoint.getY());
+            Point jumpFrom(Point previousPoint, Map map, Game game) {
+                return new Point(previousPoint.getX() + game.speed, previousPoint.getY());
             }
 
             public State change() {
@@ -73,8 +73,8 @@ public class Player {
             }
         },
         LEFT {
-            Point jumpFrom(Point previousPoint, Map map) {
-                return new Point(previousPoint.getX() - map.getWidth()/4, previousPoint.getY());
+            Point jumpFrom(Point previousPoint, Map map, Game game) {
+                return new Point(previousPoint.getX() - game.speed, previousPoint.getY());
             }
 
             public State change() {
@@ -83,10 +83,10 @@ public class Player {
 
         };
 
-        abstract Point jumpFrom(Point previousPoint, Map map);
+        abstract Point jumpFrom(Point previousPoint, Map map, Game game);
 
-        Point jumpFromAndPrint(Point previousPoint, Map map) {
-            Point nextPoint = jumpFrom(previousPoint, map);
+        Point jumpFromAndPrint(Point previousPoint, Map map, Game game) {
+            Point nextPoint = jumpFrom(previousPoint, map, game);
             System.out.println(nextPoint);
             return nextPoint;
         }
@@ -217,6 +217,7 @@ public class Player {
             this.map = map;
             this.maxTurns = maxTurns;
             this.position = position;
+            this.speed = map.getHeight() < map.getWidth() ? map.getHeight()/4 : map.getWidth()/4;
 
         }
 
@@ -255,12 +256,12 @@ public class Player {
 
         public void goDirection(State state) {
             this.state = state;
-            Point nextPosition = state.jumpFromAndPrint(position, map);
+            Point nextPosition = state.jumpFromAndPrint(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void keepDirection() {
-            Point nextPosition = state.jumpFromAndPrint(position, map);
+            Point nextPosition = state.jumpFromAndPrint(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
@@ -269,7 +270,7 @@ public class Player {
                 speed = speed/2;
             }
             this.state = state.change();
-            Point nextPosition = state.jumpFromAndPrint(position, map);
+            Point nextPosition = state.jumpFromAndPrint(position, map, this);
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
         }
 
