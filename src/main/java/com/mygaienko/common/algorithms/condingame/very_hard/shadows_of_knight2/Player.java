@@ -50,8 +50,8 @@ public class Player {
                 return new Point(previousPoint.getX(), previousPoint.getY() - game.speed);
             }
 
-            public State change() {
-                return RIGHT;
+            public State change(boolean clockwise) {
+                return clockwise ? RIGHT : LEFT;
             }
         },
         DOWN {
@@ -59,8 +59,8 @@ public class Player {
                 return new Point(previousPoint.getX(), previousPoint.getY() + game.speed);
             }
 
-            public State change() {
-                return LEFT;
+            public State change(boolean clockwise) {
+                return clockwise ? LEFT : RIGHT;
             }
         },
         RIGHT {
@@ -68,8 +68,8 @@ public class Player {
                 return new Point(previousPoint.getX() + game.speed, previousPoint.getY());
             }
 
-            public State change() {
-                return DOWN;
+            public State change(boolean clockwise) {
+                return clockwise ? DOWN : UP;
             }
         },
         LEFT {
@@ -77,15 +77,15 @@ public class Player {
                 return new Point(previousPoint.getX() - game.speed, previousPoint.getY());
             }
 
-            public State change() {
-                return UP;
+            public State change(boolean clockwise) {
+                return clockwise ? UP : DOWN;
             }
 
         };
 
         abstract Point jumpFrom(Point previousPoint, Map map, Game game);
 
-        public abstract State change();
+        public abstract State change(boolean clockwise);
     }
 
     public static class Point {
@@ -197,14 +197,19 @@ public class Player {
 
         int speed;
 
-        Queue<Action> actionQueue = new LinkedBlockingQueue<>(2);
+        boolean clockwise = true;
 
-        Queue<Action> allChanges = initAllChanges();
+        Queue<Action> actionQueue = new LinkedBlockingQueue<>(4);
 
-        private LinkedBlockingQueue<Action> initAllChanges() {
-            LinkedBlockingQueue<Action> allChanges = new LinkedBlockingQueue<>(2);
-            allChanges.addAll(Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION));
-            return allChanges;
+        List<Action> halfTurn = initHalfTurn();
+        List<Action> fullTurn = initFullTurn();
+
+        private List<Action> initHalfTurn() {
+            return Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION);
+        }
+
+        private List<Action> initFullTurn() {
+            return Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION);
         }
 
         public Game(Map map, int maxTurns, Point position) {
@@ -217,7 +222,7 @@ public class Player {
 
         public boolean addToActionHistory(Action action){
             System.err.println("actionQueue: " + actionQueue + " new Action: " + action);
-            if (actionQueue.size() == 2) {
+            if (actionQueue.size() == 4) {
                 actionQueue.poll();
             }
             boolean add = actionQueue.add(action);
@@ -268,10 +273,17 @@ public class Player {
 
         public void changeDirection() {
             System.err.println("changeDirection: actionQueue" + actionQueue);
-            if (actionQueue.containsAll(allChanges) && speed > 1) {
+
+            List<Action> queueView = new ArrayList<>(actionQueue);
+            if (queueView.equals(fullTurn)) {
+                System.err.println("actionQueue.containsAll(fullTurn)" + actionQueue);
+                actionQueue.clear();
+                this.clockwise = !clockwise;
+            } else if (queueView.subList(2, 4).equals(halfTurn) && speed > 1) {
+                System.err.println("actionQueue.containsAll(halfTurn");
                 speed = speed/2;
             }
-            this.state = state.change();
+            this.state = state.change(clockwise);
             Point nextPosition = state.jumpFrom(position, map, this);
             System.err.println("changeDirection: nextPosition" + nextPosition);
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
