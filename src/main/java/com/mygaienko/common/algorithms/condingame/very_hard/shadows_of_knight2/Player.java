@@ -298,10 +298,20 @@ class Player {
         Speed speed;
 
         Queue<Action> actionQueue = new LinkedBlockingQueue<>(4);
-        List<Action> balanceTurns = initBalanceTurns();
+        List<Action> colderBalanceTurns = initColderBalanceTurns();
+        List<Action> warmerBalanceTurns = initWarmerBalanceTurns();
+        List<Action> changesBalanceTurns = initChangesBalanceTurns();
 
-        private List<Action> initBalanceTurns() {
+        private List<Action> initChangesBalanceTurns() {
+            return Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION);
+        }
+
+        private List<Action> initColderBalanceTurns() {
             return Arrays.asList(Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION);
+        }
+
+        private List<Action> initWarmerBalanceTurns() {
+            return Arrays.asList(Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION);
         }
 
         public Game(Map map, int maxTurns, Point position) {
@@ -370,6 +380,17 @@ class Player {
 
         public void keepDirection() {
             System.err.println("keepDirection");
+
+            List<Action> queueView = new ArrayList<>(actionQueue);
+            if (queueView.equals(warmerBalanceTurns)) {
+                if (state.getSpeed(speed) == 1) {
+                    this.state = state.makeAturn();
+
+                    System.err.println("axis found" + position);
+                    actionQueue.clear();
+                }
+            }
+
             Point nextPosition = state.jumpFrom(position, map, this);
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
@@ -378,18 +399,14 @@ class Player {
             System.err.println("changeDirection: actionQueue" + actionQueue);
             List<Action> queueView = new ArrayList<>(actionQueue);
 
-            if (queueView.equals(balanceTurns)) {
-                if (state.getSpeed(speed) == 1) {
-                    this.state = state.turnAround();
-                    position = state.jumpFrom(position, map, this);
-                    this.state = state.makeAturn();
-
-                    System.err.println("axis found" + position);
-                    actionQueue.clear();
-                }
+            if (queueView.equals(colderBalanceTurns)) {
+                turnAroundAndPrepareToMakeATurn();
                 this.state = state.turnAround();
                 this.speed = state.pressBrake(speed);
-            } else {
+            } else if (queueView.equals(changesBalanceTurns)) {
+                turnAroundAndPrepareToMakeATurn();
+            }
+            else {
                 this.speed = state.pressBrake(speed);
                 this.state = state.turnAround();
             }
@@ -399,12 +416,24 @@ class Player {
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
         }
 
+        private void turnAroundAndPrepareToMakeATurn() {
+            if (state.getSpeed(speed) == 1) {
+                this.state = state.turnAround();
+                position = state.jumpFrom(position, map, this);
+                this.state = state.makeAturn();
+
+                System.err.println("axis found" + position);
+                actionQueue.clear();
+            }
+        }
+
         private void safelyGoToPoint(Point nextPosition, Action action) {
             System.err.println("safelyGoToPoint: nextPosition: " + nextPosition + " action: " + action );
             if (notValid(nextPosition, map)) {
                 if (state.getSpeed(speed) == 1) {
                     state = state.turnAround();
                     state.pressGas(speed, this);
+                    action = Action.CHANGE_DIRECTION;
                 } else {
                     state.pressBrake(speed);
                 }
