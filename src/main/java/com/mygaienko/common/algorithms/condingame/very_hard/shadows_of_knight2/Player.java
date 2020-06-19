@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Auto-generated code below aims at helping you parse
  * the standard input according to the problem statement.
  **/
-public class Player {
+class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -47,45 +47,109 @@ public class Player {
 
         UP {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
-                return new Point(previousPoint.getX(), previousPoint.getY() - game.speed);
+                return new Point(previousPoint.getX(), previousPoint.getY() - getSpeed(game.speed));
             }
 
-            public State change(boolean clockwise) {
-                return clockwise ? RIGHT : LEFT;
+            public State makeAturn() {
+                return RIGHT;
             }
+
+            public State turnAround() {
+                return DOWN;
+            }
+
+            int getSpeed(Speed speed) {
+                return speed.verticalSpeed;
+            }
+
+            Speed pressBrake(Speed speed) {
+                speed.verticalSpeed = safelyPressBrake(speed.verticalSpeed);
+                return speed;
+            }
+
+
         },
         DOWN {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
-                return new Point(previousPoint.getX(), previousPoint.getY() + game.speed);
+                return new Point(previousPoint.getX(), previousPoint.getY() + getSpeed(game.speed));
             }
 
-            public State change(boolean clockwise) {
-                return clockwise ? LEFT : RIGHT;
+            public State makeAturn() {
+                return LEFT;
+            }
+
+            public State turnAround() {
+                return UP;
+            }
+
+            int getSpeed(Speed speed) {
+                return speed.verticalSpeed;
+            }
+
+            Speed pressBrake(Speed speed) {
+                speed.verticalSpeed = safelyPressBrake(speed.verticalSpeed);
+                return speed;
             }
         },
         RIGHT {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
-                return new Point(previousPoint.getX() + game.speed, previousPoint.getY());
+                return new Point(previousPoint.getX() + getSpeed(game.speed), previousPoint.getY());
             }
 
-            public State change(boolean clockwise) {
-                return clockwise ? DOWN : UP;
+            public State makeAturn() {
+                return DOWN;
+            }
+
+            public State turnAround() {
+                return LEFT;
+            }
+
+            int getSpeed(Speed speed) {
+                return speed.horizontalSpeed;
+            }
+
+            Speed pressBrake(Speed speed) {
+                speed.horizontalSpeed = safelyPressBrake(speed.horizontalSpeed);
+                return speed;
             }
         },
         LEFT {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
-                return new Point(previousPoint.getX() - game.speed, previousPoint.getY());
+                return new Point(previousPoint.getX() - getSpeed(game.speed), previousPoint.getY());
             }
 
-            public State change(boolean clockwise) {
-                return clockwise ? UP : DOWN;
+            public State makeAturn() {
+                return UP;
+            }
+
+            public State turnAround() {
+                return RIGHT;
+            }
+
+            int getSpeed(Speed speed) {
+                return speed.horizontalSpeed;
+            }
+
+            Speed pressBrake(Speed speed) {
+                speed.horizontalSpeed = safelyPressBrake(speed.horizontalSpeed);
+                return speed;
             }
 
         };
 
         abstract Point jumpFrom(Point previousPoint, Map map, Game game);
 
-        public abstract State change(boolean clockwise);
+        abstract State makeAturn();
+
+        abstract State turnAround();
+
+        abstract int getSpeed(Speed speed);
+
+        abstract Speed pressBrake(Speed speed);
+
+        private static int safelyPressBrake(int speed) {
+            return speed > 1 ? speed / 2 : speed;
+        }
     }
 
     public static class Point {
@@ -189,35 +253,35 @@ public class Player {
 
     enum Action { KEEP_DIRECTION, CHANGE_DIRECTION }
 
+    public static class Speed {
+        int horizontalSpeed;
+        int verticalSpeed;
+
+        public Speed(int horizontalSpeed, int verticalSpeed) {
+            this.horizontalSpeed = horizontalSpeed;
+            this.verticalSpeed = verticalSpeed;
+        }
+    }
+
     public static class Game {
         Map map;
         int maxTurns;
         Point position;
         State state;
-
-        int speed;
-
-        boolean clockwise = true;
+        Speed speed;
 
         Queue<Action> actionQueue = new LinkedBlockingQueue<>(4);
+        List<Action> balanceTurns = initBalanceTurns();
 
-        List<Action> halfTurn = initHalfTurn();
-        List<Action> fullTurn = initFullTurn();
-
-        private List<Action> initHalfTurn() {
-            return Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION);
-        }
-
-        private List<Action> initFullTurn() {
-            return Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION);
+        private List<Action> initBalanceTurns() {
+            return Arrays.asList(Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION);
         }
 
         public Game(Map map, int maxTurns, Point position) {
             this.map = map;
             this.maxTurns = maxTurns;
             this.position = position;
-            this.speed = map.getHeight() < map.getWidth() ? map.getHeight()/4 : map.getWidth()/4;
-
+            this.speed = new Speed(map.getWidth() /4, map.getHeight() /4);
         }
 
         public boolean addToActionHistory(Action action){
@@ -273,58 +337,35 @@ public class Player {
 
         public void changeDirection() {
             System.err.println("changeDirection: actionQueue" + actionQueue);
-
             List<Action> queueView = new ArrayList<>(actionQueue);
-            if (queueView.equals(fullTurn)) {
-                System.err.println("actionQueue.containsAll(fullTurn)" + actionQueue);
-                actionQueue.clear();
-                this.clockwise = !clockwise;
-            } else if (queueView.subList(2, 4).equals(halfTurn) && speed > 1) {
-                System.err.println("actionQueue.containsAll(halfTurn");
-                speed = speed/2;
+
+            if (queueView.equals(balanceTurns)) {
+                if (state.getSpeed(speed) == 1) {
+                    this.state = state.turnAround();
+                    position = state.jumpFrom(position, map, this);
+                    this.state = state.makeAturn();
+
+                    System.err.println("axis found" + position);
+                    actionQueue.clear();
+                }
+                this.state = state.turnAround();
+                this.speed = state.pressBrake(speed);
+            } else {
+                this.speed = state.pressBrake(speed);
+                this.state = state.turnAround();
             }
-            this.state = state.change(clockwise);
+
             Point nextPosition = state.jumpFrom(position, map, this);
             System.err.println("changeDirection: nextPosition" + nextPosition);
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
         }
 
-        private Point goToEdge(Point position, Map map) {
-            System.err.println("goToEdge: position: " + position);
-            int x = position.getX();
-            int y = position.getY();
-
-            if (x < 0) {
-                x = 0;
-            } else if (x >= map.getWidth()) {
-                x = map.getWidth() - 1;
-            }
-
-            if (y < 0) {
-                y = 0;
-            } else if (y >= map.getHeight()) {
-                y = map.getHeight() - 1;
-            }
-
-            Point point = new Point(x, y);
-            System.err.println("goToEdge: position: " + position + " point: " + point);
-            return point;
-        }
-
         private void safelyGoToPoint(Point nextPosition, Action action) {
             System.err.println("safelyGoToPoint: nextPosition: " + nextPosition + " action: " + action );
             if (notValid(nextPosition, map)) {
-                Point validNextPosition = goToEdge(nextPosition, map);
-
-                boolean result = validNextPosition.equals(position);
-                System.err.println("validNextPosition: " + validNextPosition + " position: " + position + " result " + result );
-                if (result) {
-                    changeDirection();
-                } else {
-                    printAndAddToHistory(action, validNextPosition);
-                }
-
-
+                state.pressBrake(speed);
+                nextPosition = state.jumpFrom(position, map, this);
+                safelyGoToPoint(nextPosition, action);
             } else {
                 printAndAddToHistory(action, nextPosition);
             }
