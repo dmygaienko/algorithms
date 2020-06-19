@@ -63,7 +63,7 @@ class Player {
             }
 
             Speed pressBrake(Speed speed) {
-                speed.verticalSpeed = safelyPressBrake(speed.verticalSpeed);
+                speed.verticalSpeed = Game.safelyPressBrake(speed.verticalSpeed);
                 return speed;
             }
 
@@ -92,7 +92,7 @@ class Player {
             }
 
             Speed pressBrake(Speed speed) {
-                speed.verticalSpeed = safelyPressBrake(speed.verticalSpeed);
+                speed.verticalSpeed = Game.safelyPressBrake(speed.verticalSpeed);
                 return speed;
             }
 
@@ -119,7 +119,7 @@ class Player {
             }
 
             Speed pressBrake(Speed speed) {
-                speed.horizontalSpeed = safelyPressBrake(speed.horizontalSpeed);
+                speed.horizontalSpeed = Game.safelyPressBrake(speed.horizontalSpeed);
                 return speed;
             }
 
@@ -146,7 +146,7 @@ class Player {
             }
 
             Speed pressBrake(Speed speed) {
-                speed.horizontalSpeed = safelyPressBrake(speed.horizontalSpeed);
+                speed.horizontalSpeed = Game.safelyPressBrake(speed.horizontalSpeed);
                 return speed;
             }
 
@@ -169,9 +169,6 @@ class Player {
 
         abstract Speed pressGas(Speed speed, Game game);
 
-        private static int safelyPressBrake(int speed) {
-            return speed > 1 ? speed / 2 : speed;
-        }
     }
 
     public static class Point {
@@ -283,6 +280,14 @@ class Player {
             this.horizontalSpeed = horizontalSpeed;
             this.verticalSpeed = verticalSpeed;
         }
+
+        @Override
+        public String toString() {
+            return "Speed{" +
+                    "horizontalSpeed=" + horizontalSpeed +
+                    ", verticalSpeed=" + verticalSpeed +
+                    '}';
+        }
     }
 
     public static class Game {
@@ -307,11 +312,15 @@ class Player {
         }
 
         private int getStartVerticalSpeed() {
-            return map.getHeight() /4;
+            return map.getHeight() / 3;
         }
 
         private int getStartHorizontalSpeed() {
-            return map.getWidth() /4;
+            return map.getWidth() / 3;
+        }
+
+        public static int safelyPressBrake(int speed) {
+            return speed >= 3 ? speed / 3 : 1;
         }
 
         public boolean addToActionHistory(Action action){
@@ -408,6 +417,7 @@ class Player {
 
         private void printAndAddToHistory(Action action, Point validNextPosition) {
             position = validNextPosition;
+            System.err.println("Speed: " + speed);
             System.out.println(position);
             addToActionHistory(action);
         }
