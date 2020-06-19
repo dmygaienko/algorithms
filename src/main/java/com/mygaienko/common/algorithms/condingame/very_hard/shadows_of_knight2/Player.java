@@ -67,6 +67,11 @@ class Player {
                 return speed;
             }
 
+            Speed pressGas(Speed speed, Game game) {
+                speed.horizontalSpeed = game.getStartVerticalSpeed();
+                return speed;
+            }
+
 
         },
         DOWN {
@@ -90,6 +95,11 @@ class Player {
                 speed.verticalSpeed = safelyPressBrake(speed.verticalSpeed);
                 return speed;
             }
+
+            Speed pressGas(Speed speed, Game game) {
+                speed.horizontalSpeed = game.getStartVerticalSpeed();
+                return speed;
+            }
         },
         RIGHT {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
@@ -110,6 +120,11 @@ class Player {
 
             Speed pressBrake(Speed speed) {
                 speed.horizontalSpeed = safelyPressBrake(speed.horizontalSpeed);
+                return speed;
+            }
+
+            Speed pressGas(Speed speed, Game game) {
+                speed.horizontalSpeed = game.getStartHorizontalSpeed();
                 return speed;
             }
         },
@@ -135,6 +150,11 @@ class Player {
                 return speed;
             }
 
+            Speed pressGas(Speed speed, Game game) {
+                speed.horizontalSpeed = game.getStartHorizontalSpeed();
+                return speed;
+            }
+
         };
 
         abstract Point jumpFrom(Point previousPoint, Map map, Game game);
@@ -146,6 +166,8 @@ class Player {
         abstract int getSpeed(Speed speed);
 
         abstract Speed pressBrake(Speed speed);
+
+        abstract Speed pressGas(Speed speed, Game game);
 
         private static int safelyPressBrake(int speed) {
             return speed > 1 ? speed / 2 : speed;
@@ -281,7 +303,15 @@ class Player {
             this.map = map;
             this.maxTurns = maxTurns;
             this.position = position;
-            this.speed = new Speed(map.getWidth() /4, map.getHeight() /4);
+            this.speed = new Speed(getStartHorizontalSpeed(), getStartVerticalSpeed());
+        }
+
+        private int getStartVerticalSpeed() {
+            return map.getHeight() /4;
+        }
+
+        private int getStartHorizontalSpeed() {
+            return map.getWidth() /4;
         }
 
         public boolean addToActionHistory(Action action){
@@ -363,7 +393,12 @@ class Player {
         private void safelyGoToPoint(Point nextPosition, Action action) {
             System.err.println("safelyGoToPoint: nextPosition: " + nextPosition + " action: " + action );
             if (notValid(nextPosition, map)) {
-                state.pressBrake(speed);
+                if (state.getSpeed(speed) == 1) {
+                    state = state.turnAround();
+                    state.pressGas(speed, this);
+                } else {
+                    state.pressBrake(speed);
+                }
                 nextPosition = state.jumpFrom(position, map, this);
                 safelyGoToPoint(nextPosition, action);
             } else {
