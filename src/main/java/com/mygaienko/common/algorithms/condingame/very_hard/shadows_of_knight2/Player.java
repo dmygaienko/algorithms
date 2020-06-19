@@ -324,7 +324,7 @@ class Player {
         }
 
         public boolean addToActionHistory(Action action){
-            System.err.println("actionQueue: " + actionQueue + " new Action: " + action);
+            System.err.println("actionQueue: " + actionQueue + "\n new Action: " + action);
             if (actionQueue.size() == 4) {
                 actionQueue.poll();
             }
