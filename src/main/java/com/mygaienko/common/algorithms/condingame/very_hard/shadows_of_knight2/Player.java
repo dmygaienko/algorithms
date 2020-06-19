@@ -3,6 +3,7 @@ package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -72,6 +73,15 @@ class Player {
                 return speed;
             }
 
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstVerticalChangeDirection) {
+                    firstChangeDirection.firstVerticalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
+
 
         },
         DOWN {
@@ -100,6 +110,15 @@ class Player {
                 speed.horizontalSpeed = game.getStartVerticalSpeed();
                 return speed;
             }
+
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstVerticalChangeDirection) {
+                    firstChangeDirection.firstVerticalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
         },
         RIGHT {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
@@ -126,6 +145,15 @@ class Player {
             Speed pressGas(Speed speed, Game game) {
                 speed.horizontalSpeed = game.getStartHorizontalSpeed();
                 return speed;
+            }
+
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstHorizontalChangeDirection) {
+                    firstChangeDirection.firstHorizontalChangeDirection = false;
+                    result = true;
+                }
+                return result;
             }
         },
         LEFT {
@@ -155,6 +183,15 @@ class Player {
                 return speed;
             }
 
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstHorizontalChangeDirection) {
+                    firstChangeDirection.firstHorizontalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
+
         };
 
         abstract Point jumpFrom(Point previousPoint, Map map, Game game);
@@ -169,6 +206,7 @@ class Player {
 
         abstract Speed pressGas(Speed speed, Game game);
 
+        public abstract boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection);
     }
 
     public static class Point {
@@ -290,12 +328,21 @@ class Player {
         }
     }
 
+    public static class FirstChangeDirection {
+        boolean firstHorizontalChangeDirection = true;
+        boolean firstVerticalChangeDirection = true;
+    }
+
     public static class Game {
         Map map;
         int maxTurns;
         Point position;
         State state;
         Speed speed;
+
+        FirstChangeDirection firstChangeDirection = new FirstChangeDirection();
+
+        AtomicBoolean axisFound = new AtomicBoolean(false);
 
         Queue<Action> actionQueue = new LinkedBlockingQueue<>(4);
         List<Action> colderBalanceTurns = initColderBalanceTurns();
@@ -330,7 +377,7 @@ class Player {
         }
 
         public static int safelyPressBrake(int speed) {
-            return speed >= 3 ? speed / 3 : 1;
+            return speed >= 2 ? speed / 2 : 1;
         }
 
         public boolean addToActionHistory(Action action){
@@ -382,13 +429,10 @@ class Player {
             System.err.println("keepDirection");
 
             List<Action> queueView = new ArrayList<>(actionQueue);
-            if (queueView.equals(warmerBalanceTurns)) {
-                if (state.getSpeed(speed) == 1) {
-                    this.state = state.makeAturn();
-
-                    System.err.println("axis found" + position);
-                    actionQueue.clear();
-                }
+            if (queueView.equals(warmerBalanceTurns) && state.getSpeed(speed) == 1 && isAxisNotFound()) {
+                this.state = state.makeAturn();
+                System.err.println("axis found " + position);
+                actionQueue.clear();
             }
 
             Point nextPosition = state.jumpFrom(position, map, this);
@@ -406,7 +450,9 @@ class Player {
             } else if (queueView.equals(changesBalanceTurns)) {
                 turnAroundAndPrepareToMakeATurn();
             }
-            else {
+            else if (state.isFirstChangeDirection(firstChangeDirection)){
+                this.state = state.turnAround();
+            } else {
                 this.speed = state.pressBrake(speed);
                 this.state = state.turnAround();
             }
@@ -416,13 +462,17 @@ class Player {
             safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
         }
 
+        private boolean isAxisNotFound() {
+            return  !axisFound.getAndSet(true);
+        }
+
         private void turnAroundAndPrepareToMakeATurn() {
-            if (state.getSpeed(speed) == 1) {
+            if (state.getSpeed(speed) == 1 && isAxisNotFound()) {
                 this.state = state.turnAround();
                 position = state.jumpFrom(position, map, this);
                 this.state = state.makeAturn();
 
-                System.err.println("axis found" + position);
+                System.err.println("axis found - " + position);
                 actionQueue.clear();
             }
         }
