@@ -369,15 +369,15 @@ class Player {
         }
 
         private int getStartVerticalSpeed() {
-            return map.getHeight() / 3;
+            return map.getHeight() / 4;
         }
 
         private int getStartHorizontalSpeed() {
-            return map.getWidth() / 3;
+            return map.getWidth() / 4;
         }
 
         public static int safelyPressBrake(int speed) {
-            return speed >= 2 ? speed / 2 : 1;
+            return speed >= 4 ? speed / 4 : 1;
         }
 
         public boolean addToActionHistory(Action action){
