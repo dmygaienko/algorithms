@@ -1,4 +1,4 @@
-package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;
+//package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;
 
 
 import java.util.*;
@@ -69,7 +69,7 @@ class Player {
             }
 
             Speed pressGas(Speed speed, Game game) {
-                speed.horizontalSpeed = game.getStartVerticalSpeed();
+                speed.verticalSpeed = game.getStartVerticalSpeed();
                 return speed;
             }
 
@@ -107,7 +107,7 @@ class Player {
             }
 
             Speed pressGas(Speed speed, Game game) {
-                speed.horizontalSpeed = game.getStartVerticalSpeed();
+                speed.verticalSpeed = game.getStartVerticalSpeed();
                 return speed;
             }
 
@@ -321,10 +321,14 @@ class Player {
 
         @Override
         public String toString() {
-            return "Speed{" +
-                    "horizontalSpeed=" + horizontalSpeed +
-                    ", verticalSpeed=" + verticalSpeed +
+            return "Spd{" +
+                    "hor=" + horizontalSpeed +
+                    ",vert=" + verticalSpeed +
                     '}';
+        }
+
+        public Speed copy() {
+            return new Speed(horizontalSpeed, verticalSpeed);
         }
     }
 
@@ -345,6 +349,8 @@ class Player {
         AtomicBoolean axisFound = new AtomicBoolean(false);
 
         Queue<Action> actionQueue = new LinkedBlockingQueue<>(4);
+        Queue<Speed> speedQueue = new LinkedBlockingQueue<>(4);
+
         List<Action> colderBalanceTurns = initColderBalanceTurns();
         List<Action> warmerBalanceTurns = initWarmerBalanceTurns();
         List<Action> changesBalanceTurns = initChangesBalanceTurns();
@@ -390,6 +396,13 @@ class Player {
             return add;
         }
 
+        public boolean addToSpeedHistory(Speed speed){
+            if (speedQueue.size() == 4) {
+                speedQueue.poll();
+            }
+            return speedQueue.add(speed);
+        }
+
         public Map getMap() {
             return map;
         }
@@ -429,7 +442,7 @@ class Player {
             System.err.println("keepDirection");
 
             List<Action> queueView = new ArrayList<>(actionQueue);
-            if (queueView.equals(warmerBalanceTurns) && state.getSpeed(speed) == 1 && isAxisNotFound()) {
+            if (queueView.equals(warmerBalanceTurns) && speedLowTwoTimes() && isAxisNotFound()) {
                 this.state = state.makeAturn();
                 System.err.println("axis found " + position);
                 actionQueue.clear();
@@ -439,19 +452,39 @@ class Player {
             safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
+        private boolean speedLowTwoTimes() {
+            int times = 4;
+
+            int size = speedQueue.size();
+            if (size < times) {
+                return false;
+            }
+            return speedQueue
+                    .stream()
+                    .allMatch(this::isLowSpeed);
+        }
+
+        private boolean isLowSpeed(Speed lastSpeed) {
+            return state.getSpeed(lastSpeed) == 1;
+        }
+
         public void changeDirection() {
             System.err.println("changeDirection: actionQueue" + actionQueue);
             List<Action> queueView = new ArrayList<>(actionQueue);
 
-            if (queueView.equals(colderBalanceTurns)) {
+            if (queueView.equals(colderBalanceTurns) && speedLowTwoTimes()) {
                 turnAroundAndPrepareToMakeATurn();
-                this.state = state.turnAround();
-                this.speed = state.pressBrake(speed);
             } else if (queueView.equals(changesBalanceTurns)) {
                 turnAroundAndPrepareToMakeATurn();
-            }
-            else if (state.isFirstChangeDirection(firstChangeDirection)){
+            } else if (state.isFirstChangeDirection(firstChangeDirection)){
                 this.state = state.turnAround();
+            } else if (state.getSpeed(speed) > 1){
+                System.err.println("changeDirection: next try slowly start position - " + position + " state - " + state.name() + " speed - " + speed);
+                this.state = state.turnAround();
+                this.position = state.jumpFrom(position, map, this);
+                this.state = state.turnAround();
+                this.speed = state.pressBrake(speed);
+                System.err.println("changeDirection: next try slowly start position - " + position + " state - " + state.name() + " speed - " + speed);
             } else {
                 this.speed = state.pressBrake(speed);
                 this.state = state.turnAround();
@@ -496,9 +529,14 @@ class Player {
 
         private void printAndAddToHistory(Action action, Point validNextPosition) {
             position = validNextPosition;
-            System.err.println("Speed: " + speed);
-            System.out.println(position);
+            addToSpeedHistory(speed.copy());
+            System.err.println("Speeds: " + speedQueue);
+            printPosition();
             addToActionHistory(action);
+        }
+
+        private void printPosition() {
+            System.out.println(position);
         }
 
         private boolean notValid(Point position, Map map) {
