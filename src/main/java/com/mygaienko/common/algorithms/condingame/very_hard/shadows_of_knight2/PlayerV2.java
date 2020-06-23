@@ -1,4 +1,4 @@
-//package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;
+package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;//package com.mygaienko.common.algorithms.condingame.very_hard.shadows_of_knight2;
 
 
 import java.util.*;
@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Auto-generated code below aims at helping you parse
  * the standard input according to the problem statement.
  **/
-class Player {
+class PlayerV2 {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -19,34 +19,29 @@ class Player {
         // game loop
         while (true) {
 
-            BombDistance bombDistance = BombDistance.valueOf(in.next()); // Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
+            String bombDir = in.next(); // Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
 
-            game.addBombDistance(bombDistance);
-
-            System.err.println(bombDistance);
-            if (BombDistance.UNKNOWN.equals(bombDistance)) {
+            System.err.println(bombDir);
+            if ("UNKNOWN".equals(bombDir)) {
 
                 if (game.getPosition().isHigher(game.getMap().getCenter())) {
-                    game.makeFirstMove(State.DOWN);
+                    game.goDirection(State.DOWN);
                 } else {
-                    game.makeFirstMove(State.UP);
+                    game.goDirection(State.UP);
                 }
 
             }
 
-            if (BombDistance.WARMER.equals(bombDistance)) {
+            if ("WARMER".equals(bombDir)) {
                 game.keepDirection();
             }
 
-            if (BombDistance.COLDER.equals(bombDistance) || BombDistance.SAME.equals(bombDistance)) {
-                game.changePointToMoveFrom();
+            if ("COLDER".equals(bombDir) || "SAME".equals(bombDir)) {
+                game.changeDirection();
             }
 
         }
 
-    }
-    enum BombDistance {
-        UNKNOWN, SAME, WARMER, COLDER
     }
 
     enum State {
@@ -78,6 +73,15 @@ class Player {
                 return speed;
             }
 
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstVerticalChangeDirection) {
+                    firstChangeDirection.firstVerticalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
+
 
         },
         DOWN {
@@ -107,6 +111,14 @@ class Player {
                 return speed;
             }
 
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstVerticalChangeDirection) {
+                    firstChangeDirection.firstVerticalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
         },
         RIGHT {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
@@ -135,6 +147,14 @@ class Player {
                 return speed;
             }
 
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstHorizontalChangeDirection) {
+                    firstChangeDirection.firstHorizontalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
         },
         LEFT {
             Point jumpFrom(Point previousPoint, Map map, Game game) {
@@ -163,6 +183,14 @@ class Player {
                 return speed;
             }
 
+            public boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection) {
+                boolean result = false;
+                if (firstChangeDirection.firstHorizontalChangeDirection) {
+                    firstChangeDirection.firstHorizontalChangeDirection = false;
+                    result = true;
+                }
+                return result;
+            }
 
         };
 
@@ -178,6 +206,7 @@ class Player {
 
         abstract Speed pressGas(Speed speed, Game game);
 
+        public abstract boolean isFirstChangeDirection(FirstChangeDirection firstChangeDirection);
     }
 
     public static class Point {
@@ -279,6 +308,8 @@ class Player {
         return map;
     }
 
+    enum Action { KEEP_DIRECTION, CHANGE_DIRECTION }
+
     public static class Speed {
         int horizontalSpeed;
         int verticalSpeed;
@@ -301,6 +332,10 @@ class Player {
         }
     }
 
+    public static class FirstChangeDirection {
+        boolean firstHorizontalChangeDirection = true;
+        boolean firstVerticalChangeDirection = true;
+    }
 
     public static class Game {
         Map map;
@@ -309,12 +344,28 @@ class Player {
         State state;
         Speed speed;
 
+        FirstChangeDirection firstChangeDirection = new FirstChangeDirection();
+
         AtomicBoolean axisFound = new AtomicBoolean(false);
 
-        Queue<BombDistance> bombDistanceQueue = new LinkedBlockingQueue<>(4);
+        Queue<Action> actionQueue = new LinkedBlockingQueue<>(4);
         Queue<Speed> speedQueue = new LinkedBlockingQueue<>(4);
 
-        private List<BombDistance> warmerColder = Arrays.asList(BombDistance.WARMER, BombDistance.COLDER);
+        List<Action> colderBalanceTurns = initColderBalanceTurns();
+        List<Action> warmerBalanceTurns = initWarmerBalanceTurns();
+        List<Action> changesBalanceTurns = initChangesBalanceTurns();
+
+        private List<Action> initChangesBalanceTurns() {
+            return Arrays.asList(Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION, Action.CHANGE_DIRECTION);
+        }
+
+        private List<Action> initColderBalanceTurns() {
+            return Arrays.asList(Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION);
+        }
+
+        private List<Action> initWarmerBalanceTurns() {
+            return Arrays.asList(Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION, Action.KEEP_DIRECTION, Action.CHANGE_DIRECTION);
+        }
 
         public Game(Map map, int maxTurns, Point position) {
             this.map = map;
@@ -324,15 +375,25 @@ class Player {
         }
 
         private int getStartVerticalSpeed() {
-            return map.getHeight() / 2;
+            return map.getHeight() / 4;
         }
 
         private int getStartHorizontalSpeed() {
-            return map.getWidth() / 2;
+            return map.getWidth() / 4;
         }
 
         public static int safelyPressBrake(int speed) {
-            return speed >= 2 ? (int) Math.round((double) speed / 2) : 1;
+            return speed >= 4 ? speed / 4 : 1;
+        }
+
+        public boolean addToActionHistory(Action action){
+            System.err.println("actionQueue: " + actionQueue + "\n new Action: " + action);
+            if (actionQueue.size() == 4) {
+                actionQueue.poll();
+            }
+            boolean add = actionQueue.add(action);
+            System.err.println("actionQueue: " + actionQueue);
+            return add;
         }
 
         public boolean addToSpeedHistory(Speed speed){
@@ -370,66 +431,108 @@ class Player {
             return state;
         }
 
-        public void makeFirstMove(State state) {
+        public void goDirection(State state) {
             System.err.println("State: " + state);
             this.state = state;
-            Point nextPosition = state.jumpFrom(new Point(position.getX(), 0), map, this);
-            printAndAddToHistory(nextPosition);
+            Point nextPosition = state.jumpFrom(position, map, this);
+            safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
         public void keepDirection() {
             System.err.println("keepDirection");
-            speed = state.pressBrake(speed);
-            Point nextPosition = state.jumpFrom(position, map, this);
-            safelyGoToPoint(nextPosition);
-        }
 
-        public void changePointToMoveFrom() {
-            System.err.println("changePointToMoveFrom: bombDistanceQueue" + bombDistanceQueue);
-            Point nextPosition;
-
-            state = state.turnAround();
-
-            List<BombDistance> bombDistanceView = new ArrayList<>(bombDistanceQueue);
-            if (bombDistanceView.subList(bombDistanceView.size() - 2, bombDistanceView.size()).equals(warmerColder) && speedLowTwoTimes()) {
-                nextPosition = state.jumpFrom(position, map, this);
-                System.err.println("axis found - " + nextPosition);
+            List<Action> queueView = new ArrayList<>(actionQueue);
+            if (queueView.equals(warmerBalanceTurns) && speedLowTwoTimes() && isAxisNotFound()) {
                 this.state = state.makeAturn();
-                nextPosition = state.jumpFrom(new Point(0, nextPosition.getY()), map, this);
-            } else {
-                speed = state.pressBrake(speed);
-                Point changedStartPoint = state.jumpFrom(position, map, this);
-                System.err.println("changePointToMoveFrom: changedStartPoint " + changedStartPoint);
-                state = state.turnAround();
-                speed = state.pressBrake(speed);
-                nextPosition = state.jumpFrom(changedStartPoint, map, this);
+                System.err.println("axis found " + position);
+                actionQueue.clear();
             }
 
-            System.err.println("changePointToMoveFrom: nextPosition " + nextPosition);
-            safelyGoToPoint(nextPosition);
+            Point nextPosition = state.jumpFrom(position, map, this);
+            safelyGoToPoint(nextPosition, Action.KEEP_DIRECTION);
         }
 
-        private void safelyGoToPoint(Point nextPosition) {
-            System.err.println("safelyGoToPoint: nextPosition: " + nextPosition + " state: " + state);
+        private boolean speedLowTwoTimes() {
+            int times = 4;
+
+            int size = speedQueue.size();
+            if (size < times) {
+                return false;
+            }
+            return speedQueue
+                    .stream()
+                    .allMatch(this::isLowSpeed);
+        }
+
+        private boolean isLowSpeed(Speed lastSpeed) {
+            return state.getSpeed(lastSpeed) == 1;
+        }
+
+        public void changeDirection() {
+            System.err.println("changePointToMoveFrom: actionQueue" + actionQueue);
+            List<Action> queueView = new ArrayList<>(actionQueue);
+
+            if (queueView.equals(colderBalanceTurns) && speedLowTwoTimes()) {
+                turnAroundAndPrepareToMakeATurn();
+            } else if (queueView.equals(changesBalanceTurns)) {
+                turnAroundAndPrepareToMakeATurn();
+            } else if (state.isFirstChangeDirection(firstChangeDirection)){
+                this.state = state.turnAround();
+            } else if (state.getSpeed(speed) > 1){
+                System.err.println("changePointToMoveFrom: next try slowly start position - " + position + " state - " + state.name() + " speed - " + speed);
+                this.state = state.turnAround();
+                this.position = state.jumpFrom(position, map, this);
+                this.state = state.turnAround();
+                this.speed = state.pressBrake(speed);
+                System.err.println("changePointToMoveFrom: next try slowly start position - " + position + " state - " + state.name() + " speed - " + speed);
+            } else {
+                this.speed = state.pressBrake(speed);
+                this.state = state.turnAround();
+            }
+
+            Point nextPosition = state.jumpFrom(position, map, this);
+            System.err.println("changePointToMoveFrom: nextPosition" + nextPosition);
+            safelyGoToPoint(nextPosition, Action.CHANGE_DIRECTION);
+        }
+
+        private boolean isAxisNotFound() {
+            return  !axisFound.getAndSet(true);
+        }
+
+        private void turnAroundAndPrepareToMakeATurn() {
+            if (state.getSpeed(speed) == 1 && isAxisNotFound()) {
+                this.state = state.turnAround();
+                position = state.jumpFrom(position, map, this);
+                this.state = state.makeAturn();
+
+                System.err.println("axis found - " + position);
+                actionQueue.clear();
+            }
+        }
+
+        private void safelyGoToPoint(Point nextPosition, Action action) {
+            System.err.println("safelyGoToPoint: nextPosition: " + nextPosition + " action: " + action );
             if (notValid(nextPosition, map)) {
                 if (state.getSpeed(speed) == 1) {
                     state = state.turnAround();
+                    state.pressGas(speed, this);
+                    action = Action.CHANGE_DIRECTION;
                 } else {
                     state.pressBrake(speed);
                 }
                 nextPosition = state.jumpFrom(position, map, this);
-                safelyGoToPoint(nextPosition);
+                safelyGoToPoint(nextPosition, action);
             } else {
-                printAndAddToHistory(nextPosition);
+                printAndAddToHistory(action, nextPosition);
             }
         }
 
-        private void printAndAddToHistory(Point validNextPosition) {
+        private void printAndAddToHistory(Action action, Point validNextPosition) {
             position = validNextPosition;
             addToSpeedHistory(speed.copy());
             System.err.println("Speeds: " + speedQueue);
-            System.err.println("State: " + state);
             printPosition();
+            addToActionHistory(action);
         }
 
         private void printPosition() {
@@ -455,31 +558,6 @@ class Player {
                     '}';
         }
 
-        public boolean addBombDistance(BombDistance bombDistance) {
-            if (bombDistanceQueue.size() == 4) {
-                bombDistanceQueue.poll();
-            }
-            boolean add = bombDistanceQueue.add(bombDistance);
-            System.err.println("bombDistanceQueue: " + bombDistanceQueue);
-            return add;
-        }
-
-        private boolean speedLowTwoTimes() {
-            int times = 2;
-
-            int size = speedQueue.size();
-            if (size < times) {
-                return false;
-            }
-            return speedQueue
-                    .stream()
-                    .allMatch(this::isLowSpeed);
-        }
-
-
-        private boolean isLowSpeed(Speed lastSpeed) {
-            return state.getSpeed(lastSpeed) == 1;
-        }
     }
 
 }
