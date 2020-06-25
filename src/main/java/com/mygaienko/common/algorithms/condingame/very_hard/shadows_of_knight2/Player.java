@@ -211,6 +211,10 @@ class Player {
             return y < center.y;
         }
 
+        public boolean isLieLeftTo(Point center) {
+            return x < center.x;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -379,7 +383,7 @@ class Player {
         public void makeFirstMove(State state) {
             System.err.println("State: " + state);
             this.state = state;
-            Point nextPosition = state.jumpFrom(new Point(position.getX(), position.y), map, this);
+            Point nextPosition = new Point(position.getX(), map.getCenter().getY());
             System.err.println("First move nextPosition: " + nextPosition);
             printAndAddToHistory(nextPosition);
         }
@@ -413,8 +417,8 @@ class Player {
 
         private Point makeFoundAxisMove(Point nextPosition) {
             System.err.println("axis found - " + nextPosition);
-            this.state = state.RIGHT;
-            nextPosition = state.jumpFrom(new Point(0, nextPosition.getY()), map, this);
+            this.state = nextPosition.isLieLeftTo(map.getCenter()) ? State.RIGHT : State.LEFT;
+            nextPosition = new Point(map.getCenter().getX(), nextPosition.getY());
             return nextPosition;
         }
 
@@ -424,7 +428,7 @@ class Player {
                 if (state.getSpeed(speed) == 1) {
                     state = state.turnAround();
                 } else {
-                    state.pressBrake(speed);
+                    speed = state.pressBrake(speed);
                 }
                 nextPosition = state.jumpFrom(position, map, this);
                 safelyGoToPoint(nextPosition);
