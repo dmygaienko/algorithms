@@ -78,7 +78,7 @@ class Player {
             }
 
             Speed pressGas(Speed speed, Game game) {
-                speed.verticalSpeed = game.getStartVerticalSpeed();
+                speed.verticalSpeed = speed.verticalSpeed * 2;
                 return speed;
             }
 
@@ -107,7 +107,7 @@ class Player {
             }
 
             Speed pressGas(Speed speed, Game game) {
-                speed.verticalSpeed = game.getStartVerticalSpeed();
+                speed.verticalSpeed = speed.verticalSpeed * 2;
                 return speed;
             }
 
@@ -135,7 +135,7 @@ class Player {
             }
 
             Speed pressGas(Speed speed, Game game) {
-                speed.horizontalSpeed = game.getStartHorizontalSpeed();
+                speed.horizontalSpeed = speed.horizontalSpeed * 2;
                 return speed;
             }
 
@@ -163,7 +163,7 @@ class Player {
             }
 
             Speed pressGas(Speed speed, Game game) {
-                speed.horizontalSpeed = game.getStartHorizontalSpeed();
+                speed.horizontalSpeed = speed.horizontalSpeed * 2;
                 return speed;
             }
 
@@ -298,7 +298,7 @@ class Player {
 
         @Override
         public String toString() {
-            return "Spd{" +
+            return "{" +
                     "hor=" + horizontalSpeed +
                     ",vert=" + verticalSpeed +
                     '}';
@@ -406,13 +406,26 @@ class Player {
                 nextPosition = state.jumpFrom(position, map, this);
                 nextPosition = makeFoundAxisMove(nextPosition);
             } else {
-                speed = state.pressBrake(speed);
+                if (state.getSpeed(speed) == getHalfOfMap()) {
+                    speed = state.pressBrake(speed);
+                }
+
                 System.err.println("changePointToMoveFrom: turnAround and pressBrake: speed " + speed + " state " + state);
                 nextPosition = state.jumpFrom(position, map, this);
             }
 
             System.err.println("changePointToMoveFrom: nextPosition " + nextPosition);
             safelyGoToPoint(nextPosition);
+        }
+
+        private int getHalfOfMap() {
+            int result;
+            if (isVertical()) {
+                result = map.height/2;
+            } else {
+                result = map.width/2;
+            }
+            return result;
         }
 
         private Point getBeforePreviousPosition() {
@@ -448,7 +461,7 @@ class Player {
         private void printAndAddToHistory(Point validNextPosition) {
             position = validNextPosition;
             addToSpeedHistory(speed.copy());
-            System.err.println("Speeds: " + speedQueue);
+            System.err.println("Spds:" + speedQueue);
             System.err.println("State: " + state);
             positionQueue.add(position);
             printPosition();
