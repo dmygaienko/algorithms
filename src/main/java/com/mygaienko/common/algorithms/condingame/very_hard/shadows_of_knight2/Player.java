@@ -506,7 +506,8 @@ class Player {
             if (size < times) {
                 return false;
             }
-            return speedQueue
+            List<Speed> speedView = new ArrayList(speedQueue);
+            return speedView.subList(speedView.size() - 2, speedView.size())
                     .stream()
                     .allMatch(this::isLowSpeed);
         }
