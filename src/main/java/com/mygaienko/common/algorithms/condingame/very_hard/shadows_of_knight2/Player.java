@@ -415,6 +415,14 @@ class Player {
             safelyGoToPoint(nextPosition);
         }
 
+        private Point getBeforePreviousPosition() {
+            return positionQueue.get(positionQueue.size() - 2);
+        }
+
+        private Point getPreviousPosition() {
+            return positionQueue.get(positionQueue.size() - 1);
+        }
+
         private Point makeFoundAxisMove(Point nextPosition) {
             System.err.println("axis found - " + nextPosition);
             this.state = nextPosition.isLieLeftTo(map.getCenter()) ? State.RIGHT : State.LEFT;
@@ -500,8 +508,8 @@ class Player {
                 return;
             }
 
-            Point previousPosition = positionQueue.get(positionQueue.size() - 1);
-            Point beforePreviousPosition = positionQueue.get(positionQueue.size() - 2);
+            Point previousPosition = getPreviousPosition();
+            Point beforePreviousPosition = getBeforePreviousPosition();
             if (isVertical()) {
                 int nextY = (previousPosition.y + beforePreviousPosition.y)/2;
                 Point nextPosition = makeFoundAxisMove(new Point(previousPosition.x, nextY));
