@@ -379,7 +379,8 @@ class Player {
         public void makeFirstMove(State state) {
             System.err.println("State: " + state);
             this.state = state;
-            Point nextPosition = state.jumpFrom(new Point(position.getX(), 0), map, this);
+            Point nextPosition = state.jumpFrom(new Point(position.getX(), position.y), map, this);
+            System.err.println("First move nextPosition: " + nextPosition);
             printAndAddToHistory(nextPosition);
         }
 
@@ -401,7 +402,6 @@ class Player {
                 nextPosition = state.jumpFrom(position, map, this);
                 nextPosition = makeFoundAxisMove(nextPosition);
             } else {
-                state = state.turnAround();
                 speed = state.pressBrake(speed);
                 System.err.println("changePointToMoveFrom: turnAround and pressBrake: speed " + speed + " state " + state);
                 nextPosition = state.jumpFrom(position, map, this);
