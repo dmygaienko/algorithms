@@ -38,8 +38,12 @@ class Player {
                 game.keepDirection();
             }
 
-            if (BombDistance.COLDER.equals(bombDistance) || BombDistance.SAME.equals(bombDistance)) {
+            if (BombDistance.COLDER.equals(bombDistance)) {
                 game.changePointToMoveFrom();
+            }
+
+            if (BombDistance.SAME.equals(bombDistance)) {
+                game.goToCentrePoint();
             }
 
         }
@@ -314,6 +318,8 @@ class Player {
         Queue<BombDistance> bombDistanceQueue = new LinkedBlockingQueue<>(4);
         Queue<Speed> speedQueue = new LinkedBlockingQueue<>(4);
 
+        List<Point> positionQueue = new ArrayList<>();
+
         private List<BombDistance> warmerColder = Arrays.asList(BombDistance.WARMER, BombDistance.COLDER);
 
         public Game(Map map, int maxTurns, Point position) {
@@ -393,20 +399,23 @@ class Player {
             List<BombDistance> bombDistanceView = new ArrayList<>(bombDistanceQueue);
             if (bombDistanceView.subList(bombDistanceView.size() - 2, bombDistanceView.size()).equals(warmerColder) && speedLowTwoTimes()) {
                 nextPosition = state.jumpFrom(position, map, this);
-                System.err.println("axis found - " + nextPosition);
-                this.state = state.makeAturn();
-                nextPosition = state.jumpFrom(new Point(0, nextPosition.getY()), map, this);
+                nextPosition = makeFoundAxisMove(nextPosition);
             } else {
-                speed = state.pressBrake(speed);
-                Point changedStartPoint = state.jumpFrom(position, map, this);
-                System.err.println("changePointToMoveFrom: changedStartPoint " + changedStartPoint);
                 state = state.turnAround();
                 speed = state.pressBrake(speed);
-                nextPosition = state.jumpFrom(changedStartPoint, map, this);
+                System.err.println("changePointToMoveFrom: turnAround and pressBrake: speed " + speed + " state " + state);
+                nextPosition = state.jumpFrom(position, map, this);
             }
 
             System.err.println("changePointToMoveFrom: nextPosition " + nextPosition);
             safelyGoToPoint(nextPosition);
+        }
+
+        private Point makeFoundAxisMove(Point nextPosition) {
+            System.err.println("axis found - " + nextPosition);
+            this.state = state.RIGHT;
+            nextPosition = state.jumpFrom(new Point(0, nextPosition.getY()), map, this);
+            return nextPosition;
         }
 
         private void safelyGoToPoint(Point nextPosition) {
@@ -429,6 +438,7 @@ class Player {
             addToSpeedHistory(speed.copy());
             System.err.println("Speeds: " + speedQueue);
             System.err.println("State: " + state);
+            positionQueue.add(position);
             printPosition();
         }
 
@@ -455,7 +465,7 @@ class Player {
                     '}';
         }
 
-        public boolean addBombDistance(BombDistance bombDistance) {
+        boolean addBombDistance(BombDistance bombDistance) {
             if (bombDistanceQueue.size() == 4) {
                 bombDistanceQueue.poll();
             }
@@ -476,9 +486,21 @@ class Player {
                     .allMatch(this::isLowSpeed);
         }
 
-
         private boolean isLowSpeed(Speed lastSpeed) {
             return state.getSpeed(lastSpeed) == 1;
+        }
+
+        void goToCentrePoint() {
+            if (positionQueue.size() < 2) {
+                System.err.println("positionQueue is empty: " + positionQueue);
+                return;
+            }
+
+            Point previousPosition = positionQueue.get(positionQueue.size() - 1);
+            Point beforePreviousPosition = positionQueue.get(positionQueue.size() - 2);
+            int nextY = (previousPosition.y + beforePreviousPosition.y)/2;
+            Point nextPosition = makeFoundAxisMove(new Point(previousPosition.x, nextY));
+            safelyGoToPoint(nextPosition);
         }
     }
 
