@@ -502,10 +502,22 @@ class Player {
 
             Point previousPosition = positionQueue.get(positionQueue.size() - 1);
             Point beforePreviousPosition = positionQueue.get(positionQueue.size() - 2);
-            int nextY = (previousPosition.y + beforePreviousPosition.y)/2;
-            Point nextPosition = makeFoundAxisMove(new Point(previousPosition.x, nextY));
-            safelyGoToPoint(nextPosition);
+            if (isVertical()) {
+                int nextY = (previousPosition.y + beforePreviousPosition.y)/2;
+                Point nextPosition = makeFoundAxisMove(new Point(previousPosition.x, nextY));
+                safelyGoToPoint(nextPosition);
+            } else {
+                int nextX = (previousPosition.x + beforePreviousPosition.x)/2;
+                Point nextPosition = new Point(nextX, previousPosition.y);
+                safelyGoToPoint(nextPosition);
+            }
+
         }
+
+        private boolean isVertical() {
+            return state == State.UP || state == State.DOWN;
+        }
+
     }
 
 }
