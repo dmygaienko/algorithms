@@ -402,7 +402,8 @@ class Player {
             state = state.turnAround();
 
             List<BombDistance> bombDistanceView = new ArrayList<>(bombDistanceQueue);
-            if (bombDistanceView.subList(bombDistanceView.size() - 2, bombDistanceView.size()).equals(warmerColder) && speedLowTwoTimes()) {
+            if ((bombDistanceView.subList(bombDistanceView.size() - 2, bombDistanceView.size()).equals(warmerColder) && speedLowTwoTimes())
+                || twoWarmOneCold()) {
                 nextPosition = state.jumpFrom(position, map, this);
                 nextPosition = makeFoundAxisMove(nextPosition);
             } else {
@@ -416,6 +417,18 @@ class Player {
 
             System.err.println("changePointToMoveFrom: nextPosition " + nextPosition);
             safelyGoToPoint(nextPosition);
+        }
+
+        private boolean twoWarmOneCold() {
+            List<Speed> speedsView = new ArrayList<>(speedQueue);
+            List<BombDistance> bombDistanceView = new ArrayList<>(bombDistanceQueue);
+
+            if (speedsView.size() < 2 || bombDistanceView.size() < 2) {
+                return false;
+            }
+
+            return state.getSpeed(speedsView.get(speedsView.size() - 2)) == 2 && bombDistanceView.get(bombDistanceView.size() - 2).equals(BombDistance.WARMER)
+                && state.getSpeed(speedsView.get(speedsView.size() - 1)) == 1 && bombDistanceView.get(bombDistanceView.size() - 1).equals(BombDistance.COLDER);
         }
 
         private int getHalfOfMap() {
