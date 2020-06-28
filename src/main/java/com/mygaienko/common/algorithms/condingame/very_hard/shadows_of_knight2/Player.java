@@ -189,7 +189,7 @@ class Player {
         }
 
         public void play(BombDistance bombDistance) {
-            if (BombDistance.WARMER.equals(bombDistance)) {
+            if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (getLastPosition().x - xMin)/2;
@@ -197,14 +197,13 @@ class Player {
                     xMax = xMax - (getLastPosition().x - xMax)/2;
                 }
 
-            } else if (BombDistance.COLDER.equals(bombDistance)) {
+            } else if (positions.size() > 0 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (getLastPosition().x - xMax)/2;
                 } else {
                     xMin = xMin + (getLastPosition().x - xMin)/2;
                 }
-
             }
 
             int x = xMin + (xMax - xMin)/2;
