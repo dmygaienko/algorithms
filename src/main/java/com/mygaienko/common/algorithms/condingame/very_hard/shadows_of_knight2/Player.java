@@ -144,7 +144,7 @@ class Player {
         int yMax;
 
         boolean axisFound = false;
-        
+
         List<BombDistance> bombDistances = new ArrayList<>();
         List<Point> positions = new ArrayList<>();
 
@@ -233,6 +233,11 @@ class Player {
         }
 
         private Point computeY(BombDistance bombDistance) {
+            if (positions.size() == 1) {
+                int sameY = (int) Math.round((yMax + yMin)/2d);
+                return new Point(getLastPosition().x, sameY);
+            }
+
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
@@ -269,13 +274,18 @@ class Player {
                     yMax = getPreviousPosition().y;
                     yMin = getLastPosition().y;
                 }
+
+                int sameY = (int) Math.round((yMax + yMin)/2d);
+                return new Point(getLastPosition().x, sameY);
             }
-            int y = (int) Math.round(yMin + (yMax - yMin)/2d);
+
+//            int y = yMin + yMax - getLastPosition().y;
+            int y = (int) Math.round((yMax + yMin)/2d);
 
             if (y == getLastPosition().y) {
                 y = y + (getLastSpeedY()/Math.abs(getLastSpeedY()));
 
-                if (y < 0 || y == map.height) {
+                if (isYNotValid(y)) {
                     y = y - (getLastSpeedY()/Math.abs(getLastSpeedY()));
                 }
             }
@@ -286,6 +296,11 @@ class Player {
         }
 
         private Point computeX(BombDistance bombDistance) {
+            if (positions.size() == 1) {
+                int newX = (int) Math.round((xMax + xMin)/2d);
+                return new Point(newX, getLastPosition().y);
+            }
+
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
@@ -322,13 +337,18 @@ class Player {
                     xMax = getPreviousPosition().x;
                     xMin = getLastPosition().x;
                 }
+
+                int newX = (int) Math.round((xMax + xMin)/2d);
+                return new Point(newX, getLastPosition().y);
             }
-            int x = xMin + (int) Math.round((xMax - xMin)/2d);
+
+//            int x = xMin + xMax - getLastPosition().x;
+            int x = (int) Math.round((xMax + xMin)/2d);
 
             if (x == getLastPosition().x) {
                 x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
 
-                if (x < 0 || x == map.width) {
+                if (isXNotValid(x)) {
                     x = x - (getLastSpeedX()/Math.abs(getLastSpeedX()));
                 }
             }
@@ -336,6 +356,14 @@ class Player {
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
             System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(x, getLastPosition().y);
+        }
+
+        private boolean isXNotValid(int x) {
+            return x < 0 || x >= map.width;
+        }
+
+        private boolean isYNotValid(int y) {
+            return y < 0 || y >= map.height;
         }
 
         private Point getLastPosition() {
