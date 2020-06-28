@@ -177,20 +177,6 @@ class Player {
             positions.add(position);
         }
 
-        private void addBomdDistance(BombDistance bombDistance) {
-            bombDistances.add(bombDistance);
-        }
-
-        private boolean notValid(Point position, Map map) {
-            boolean result = position.getX() < 0 ||
-                    position.getX() >= map.getWidth() ||
-                    position.getY() < 0 ||
-                    position.getY() >= map.getHeight();
-
-            System.err.println("Position: " + position + " map: "  + map + " result: " + result);
-            return result;
-        }
-
         @Override
         public String toString() {
             return "Game{" +
@@ -251,16 +237,28 @@ class Player {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
+                    if (yMin < getPreviousPosition().y) {
+                        yMin = getPreviousPosition().y;
+                    }
                 } else {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    if (yMax > getPreviousPosition().y) {
+                        yMax = getPreviousPosition().y;
+                    }
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    if (yMax > getPreviousPosition().y) {
+                        yMax = getPreviousPosition().y;
+                    }
                 } else {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
+                    if (yMin < getPreviousPosition().y) {
+                        yMin = getPreviousPosition().y;
+                    }
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -292,16 +290,28 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
+                    if (xMin < getPreviousPosition().x) {
+                        xMin = getPreviousPosition().x;
+                    }
                 } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    if (xMax > getPreviousPosition().x) {
+                        xMax = getPreviousPosition().x;
+                    }
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    if (xMax > getPreviousPosition().x) {
+                        xMax = getPreviousPosition().x;
+                    }
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
+                    if (xMin < getPreviousPosition().x) {
+                        xMin = getPreviousPosition().x;
+                    }
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
