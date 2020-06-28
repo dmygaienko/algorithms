@@ -292,7 +292,7 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                } else {
+                } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
                 }
 
@@ -300,7 +300,7 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                } else {
+                } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
                 }
 
