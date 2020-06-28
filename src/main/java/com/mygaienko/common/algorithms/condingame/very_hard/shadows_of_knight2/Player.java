@@ -2,7 +2,6 @@
 
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -144,7 +143,8 @@ class Player {
         int yMin = 0;
         int yMax;
 
-        AtomicBoolean axisFound = new AtomicBoolean(false);
+        boolean axisFound = false;
+        
         List<BombDistance> bombDistances = new ArrayList<>();
         List<Point> positions = new ArrayList<>();
         private List<BombDistance> warmerColder = Arrays.asList(BombDistance.WARMER, BombDistance.COLDER);
@@ -166,6 +166,7 @@ class Player {
         }
 
         private void printPosition() {
+            positions.add(position);
             System.out.println(position);
         }
 
@@ -189,6 +190,47 @@ class Player {
         }
 
         public void play(BombDistance bombDistance) {
+            if (axisFound) {
+                position = computeX(bombDistance);
+            } else {
+                position = computeY(bombDistance);
+            }
+
+            printPosition();
+        }
+
+        private Point computeY(BombDistance bombDistance) {
+            if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
+
+                if (getPreviousPosition().y < getLastPosition().y) {
+                    yMin = yMin + (getLastPosition().y - yMin)/2;
+                } else {
+                    yMax = yMax - (getLastPosition().y - yMax)/2;
+                }
+
+            } else if (positions.size() > 0 && BombDistance.COLDER.equals(bombDistance)) {
+
+                if (getPreviousPosition().y < getLastPosition().y) {
+                    yMax = yMax - (getLastPosition().y - yMax)/2;
+                } else {
+                    yMin = yMin + (getLastPosition().y - yMin)/2;
+                }
+
+            } else if (positions.size() > 0 && bombDistance.equals(BombDistance.SAME)) {
+                if (getPreviousPosition().y < getLastPosition().y) {
+                    yMax = getLastPosition().y;
+                    yMin = getPreviousPosition().y;
+                } else {
+                    yMax = getPreviousPosition().y;
+                    yMin = getLastPosition().y;
+                }
+            }
+            int y = yMin + (yMax - yMin)/2;
+
+            return new Point(getLastPosition().x, y);
+        }
+
+        private Point computeX(BombDistance bombDistance) {
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
@@ -214,12 +256,9 @@ class Player {
                     xMin = getLastPosition().x;
                 }
             }
-
             int x = xMin + (xMax - xMin)/2;
-
-            position = new Point(x, getLastPosition().y);
-            positions.add(position);
-            printPosition();
+            
+            return new Point(x, getLastPosition().y);
         }
 
         private Point getLastPosition() {
