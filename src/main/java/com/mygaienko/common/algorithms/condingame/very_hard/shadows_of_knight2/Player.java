@@ -133,6 +133,11 @@ class Player {
     }
 
     public static class Game {
+
+        public static final double DEFAULT = 1.0d;
+        public static final double DOUBLE_MODIFICATOR = 2.0d;
+        public static final double HALF_MODIFICATOR = 0.5d;
+
         Map map;
         int maxTurns;
         Point position;
@@ -238,6 +243,8 @@ class Player {
         }
 
         private Point computeY(BombDistance bombDistance) {
+            double modificator = DEFAULT;
+
             if (positions.size() == 1) {
                 int sameY = (int) Math.round((yMax + yMin)/2d);
                 return new Point(getLastPosition().x, sameY);
@@ -248,9 +255,11 @@ class Player {
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
                     setYMinCloser();
+                    modificator = DOUBLE_MODIFICATOR;
                 } else {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
                     setYMaxCloser();
+                    modificator = HALF_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
@@ -258,9 +267,11 @@ class Player {
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
                     setYMaxCloser();
+                    modificator = HALF_MODIFICATOR;
                 } else {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
                     setYMinCloser();
+                    modificator = DOUBLE_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -277,7 +288,11 @@ class Player {
             }
 
 //            int y = yMin + yMax - getLastPosition().y;
-            int y = (int) Math.round((yMax + yMin)/2d);
+//            int y = (int) Math.round((yMax + yMin)/2d);
+            int y = yMin + (int) (Math.round((yMax - yMin)/2d) * modificator);
+            if (isYNotValid(y)) {
+                y = (int) Math.round((yMax + yMin)/2d);
+            }
 
             if (y == getLastPosition().y) {
                 y = y + (getLastSpeedY()/Math.abs(getLastSpeedY()));
@@ -301,6 +316,7 @@ class Player {
         }
 
         private Point computeX(BombDistance bombDistance) {
+            double modificator = DEFAULT;
             if (positions.size() == 1) {
                 int newX = (int) Math.round((xMax + xMin)/2d);
                 return new Point(newX, getLastPosition().y);
@@ -311,9 +327,11 @@ class Player {
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
                     setXMinCloser();
+                    modificator = DOUBLE_MODIFICATOR;
                 } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
                     setXMaxCloser();
+                    modificator = HALF_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
@@ -321,9 +339,11 @@ class Player {
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
                     setXMaxCloser();
+                    modificator = HALF_MODIFICATOR;
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
                     setXMinCloser();
+                    modificator = DOUBLE_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -340,7 +360,11 @@ class Player {
             }
 
 //            int x = xMin + xMax - getLastPosition().x;
-            int x = (int) Math.round((xMax + xMin)/2d);
+//            int x = (int) Math.round((xMax + xMin)/2d);
+            int x = xMin + (int) (Math.round((xMax - xMin)/2d) * modificator);
+            if (isXNotValid(x)) {
+                x = (int) Math.round((xMax + xMin)/2d);
+            }
 
             if (x == getLastPosition().x) {
                 x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
@@ -356,27 +380,27 @@ class Player {
         }
 
         private void setXMaxCloser() {
-            if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
-                xMax = getPreviousPosition().x;
-            }
+//            if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
+//                xMax = getPreviousPosition().x;
+//            }
         }
 
         private void setXMinCloser() {
-            if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
-                xMin = getPreviousPosition().x;
-            }
+//            if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
+//                xMin = getPreviousPosition().x;
+//            }
         }
 
         private void setYMaxCloser() {
-            if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
-                yMax = getPreviousPosition().y;
-            }
+//            if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
+//                yMax = getPreviousPosition().y;
+//            }
         }
 
         private void setYMinCloser() {
-            if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
-                yMin = getPreviousPosition().y;
-            }
+//            if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
+//                yMin = getPreviousPosition().y;
+//            }
         }
 
         private boolean xSpeedTheSame() {
