@@ -155,6 +155,8 @@ class Player {
             this.position = position;
             this.xMax = map.width - 1;
             this.yMax = map.height - 1;
+
+            positions.add(position);
         }
 
         public Map getMap() {
@@ -166,8 +168,12 @@ class Player {
         }
 
         private void printPosition() {
-            positions.add(position);
+            addPosition(position);
             System.out.println(position);
+        }
+
+        private void addPosition(Point position) {
+            positions.add(position);
         }
 
         private boolean notValid(Point position, Map map) {
@@ -190,6 +196,10 @@ class Player {
         }
 
         public void play(BombDistance bombDistance) {
+            if (!axisFound && oneWarmOneCold()) {
+                axisFound = true;
+            }
+
             if (axisFound) {
                 position = computeX(bombDistance);
             } else {
@@ -197,6 +207,10 @@ class Player {
             }
 
             printPosition();
+        }
+
+        private boolean oneWarmOneCold() {
+            return positions.size() > 2 && (getPreviousPosition().y - getPreviousPreviousPosition().y) == (getLastPosition().y - getPreviousPosition().y);
         }
 
         private Point computeY(BombDistance bombDistance) {
@@ -208,7 +222,7 @@ class Player {
                     yMax = yMax - (getLastPosition().y - yMax)/2;
                 }
 
-            } else if (positions.size() > 0 && BombDistance.COLDER.equals(bombDistance)) {
+            } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (getLastPosition().y - yMax)/2;
@@ -216,7 +230,7 @@ class Player {
                     yMin = yMin + (getLastPosition().y - yMin)/2;
                 }
 
-            } else if (positions.size() > 0 && bombDistance.equals(BombDistance.SAME)) {
+            } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = getLastPosition().y;
                     yMin = getPreviousPosition().y;
@@ -239,7 +253,7 @@ class Player {
                     xMax = xMax - (getLastPosition().x - xMax)/2;
                 }
 
-            } else if (positions.size() > 0 && BombDistance.COLDER.equals(bombDistance)) {
+            } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (getLastPosition().x - xMax)/2;
@@ -247,7 +261,7 @@ class Player {
                     xMin = xMin + (getLastPosition().x - xMin)/2;
                 }
 
-            } else if (positions.size() > 0 && bombDistance.equals(BombDistance.SAME)) {
+            } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = getLastPosition().x;
                     xMin = getPreviousPosition().x;
@@ -267,6 +281,10 @@ class Player {
 
         private Point getPreviousPosition() {
             return positions.get(positions.size() - 2);
+        }
+
+        private Point getPreviousPreviousPosition() {
+            return positions.get(positions.size() - 3);
         }
     }
 
