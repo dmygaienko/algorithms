@@ -224,10 +224,22 @@ class Player {
                 return false;
             }
 
-            int previosSpeed = getPreviousPosition().y - getPreviousPreviousPosition().y;
-            int lastSpeed = getLastPosition().y - getPreviousPosition().y;
+            int previosSpeed = getPreviosSpeedY();
+            int lastSpeed = getLastSpeedY();
             return getLastTwoBombDistances().equals(warmerColder) &&
                     previosSpeed == lastSpeed && Math.abs(previosSpeed) == 1;
+        }
+
+        private int getLastSpeedY() {
+            return getLastPosition().y - getPreviousPosition().y;
+        }
+
+        private int getLastSpeedX() {
+            return getLastPosition().x - getPreviousPosition().x;
+        }
+
+        private int getPreviosSpeedY() {
+            return getPreviousPosition().y - getPreviousPreviousPosition().y;
         }
 
         private List<BombDistance> getLastTwoBombDistances() {
@@ -262,6 +274,15 @@ class Player {
             }
             int y = (int) Math.round(yMin + (yMax - yMin)/2d);
 
+            if (y == getLastPosition().y) {
+                y = y + (getLastSpeedY()/Math.abs(getLastSpeedY()));
+
+                if (y < 0 || y == map.height) {
+                    y = y - (getLastSpeedY()/Math.abs(getLastSpeedY()));
+                }
+            }
+
+            System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
             System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(getLastPosition().x, y);
         }
@@ -294,7 +315,16 @@ class Player {
             }
             int x = xMin + (int) Math.round((xMax - xMin)/2d);
 
+            if (x == getLastPosition().x) {
+                x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
+
+                if (x < 0 || x == map.width) {
+                    x = x - (getLastSpeedX()/Math.abs(getLastSpeedX()));
+                }
+            }
+
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
+            System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(x, getLastPosition().y);
         }
 
