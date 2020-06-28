@@ -192,6 +192,7 @@ class Player {
             if (!axisFound && oneWarmOneCold()) {
                 axisFound = true;
                 Point previousPosition = getPreviousPosition();
+                positions.clear();
                 addPosition(previousPosition);
                 System.err.println("Axis found - " + previousPosition);
             }
@@ -283,6 +284,14 @@ class Player {
 
                 if (isYNotValid(y)) {
                     y = y - (getLastSpeedY()/Math.abs(getLastSpeedY()));
+                }
+
+                if (y == getLastPosition().y) {
+                    axisFound = true;
+                    Point lastPosition = getLastPosition();
+                    positions.clear();
+                    positions.add(lastPosition);
+                    return computeX(BombDistance.UNKNOWN);
                 }
             }
 
