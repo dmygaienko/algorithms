@@ -246,28 +246,20 @@ class Player {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
-                    if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
-                        yMin = getPreviousPosition().y;
-                    }
+                    setYMinCloser();
                 } else {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
-                        yMax = getPreviousPosition().y;
-                    }
+                    setYMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
-                        yMax = getPreviousPosition().y;
-                    }
+                    setYMaxCloser();
                 } else {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
-                    if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
-                        yMin = getPreviousPosition().y;
-                    }
+                    setYMinCloser();
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -309,28 +301,20 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                    if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
-                        xMin = getPreviousPosition().x;
-                    }
+                    setXMinCloser();
                 } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
-                        xMax = getPreviousPosition().x;
-                    }
+                    setXMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
-                        xMax = getPreviousPosition().x;
-                    }
+                    setXMaxCloser();
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                    if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
-                        xMin = getPreviousPosition().x;
-                    }
+                    setXMinCloser();
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -360,6 +344,30 @@ class Player {
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
             System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(x, getLastPosition().y);
+        }
+
+        private void setXMaxCloser() {
+            if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
+                xMax = getPreviousPosition().x;
+            }
+        }
+
+        private void setXMinCloser() {
+            if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
+                xMin = getPreviousPosition().x;
+            }
+        }
+
+        private void setYMaxCloser() {
+            if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
+                yMax = getPreviousPosition().y;
+            }
+        }
+
+        private void setYMinCloser() {
+            if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
+                yMin = getPreviousPosition().y;
+            }
         }
 
         private boolean xSpeedTheSame() {
