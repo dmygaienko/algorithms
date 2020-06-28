@@ -198,6 +198,7 @@ class Player {
         public void play(BombDistance bombDistance) {
             if (!axisFound && oneWarmOneCold()) {
                 axisFound = true;
+                addPosition(getPreviousPosition());
             }
 
             if (axisFound) {
@@ -210,7 +211,13 @@ class Player {
         }
 
         private boolean oneWarmOneCold() {
-            return positions.size() > 2 && (getPreviousPosition().y - getPreviousPreviousPosition().y) == (getLastPosition().y - getPreviousPosition().y);
+            if (positions.size() < 3) {
+                return false;
+            }
+
+            int previosSpeed = getPreviousPosition().y - getPreviousPreviousPosition().y;
+            int lastSpeed = getLastPosition().y - getPreviousPosition().y;
+            return previosSpeed == lastSpeed && Math.abs(previosSpeed) == 1;
         }
 
         private Point computeY(BombDistance bombDistance) {
