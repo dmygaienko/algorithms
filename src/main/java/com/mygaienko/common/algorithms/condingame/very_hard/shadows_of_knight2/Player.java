@@ -138,6 +138,8 @@ class Player {
         public static final double DOUBLE_MODIFICATOR = 2.0d;
         public static final double HALF_MODIFICATOR = 0.5d;
 
+        int i = 0;
+
         Map map;
         int maxTurns;
         Point position;
@@ -192,6 +194,8 @@ class Player {
         }
 
         public void play(BombDistance bombDistance) {
+            i++;
+
             bombDistances.add(bombDistance);
 
             if (!axisFound && oneWarmOneCold()) {
@@ -289,9 +293,10 @@ class Player {
 
 //            int y = yMin + yMax - getLastPosition().y;
 //            int y = (int) Math.round((yMax + yMin)/2d);
-            int y = yMin + (int) (Math.round((yMax - yMin)/2d) * modificator);
-            if (isYNotValid(y)) {
-                y = (int) Math.round((yMax + yMin)/2d);
+            int centre = (int) Math.round((yMax + yMin)/2d);
+            int y = (centre - getLastPosition().y) + centre;
+            if (isYNotValid(y) || lowSpeedStrategy()) {
+                y = centre;
             }
 
             if (y == getLastPosition().y) {
@@ -313,6 +318,11 @@ class Player {
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
             System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(getLastPosition().x, y);
+        }
+
+        private boolean lowSpeedStrategy() {
+            return i > (maxTurns / 4 + 2);
+            // return false;
         }
 
         private Point computeX(BombDistance bombDistance) {
@@ -361,9 +371,12 @@ class Player {
 
 //            int x = xMin + xMax - getLastPosition().x;
 //            int x = (int) Math.round((xMax + xMin)/2d);
-            int x = xMin + (int) (Math.round((xMax - xMin)/2d) * modificator);
-            if (isXNotValid(x)) {
-                x = (int) Math.round((xMax + xMin)/2d);
+            // int x = xMin + (int) (Math.round((xMax - xMin)/2d) * modificator);
+
+            int centre = (int) Math.round((xMax + xMin)/2d);
+            int x = (centre - getLastPosition().x) + centre;
+            if (isXNotValid(x) || lowSpeedStrategy()) {
+                x = centre;
             }
 
             if (x == getLastPosition().x) {
