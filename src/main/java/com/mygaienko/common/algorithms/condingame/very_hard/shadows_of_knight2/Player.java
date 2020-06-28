@@ -228,6 +228,10 @@ class Player {
             return getPreviousPosition().y - getPreviousPreviousPosition().y;
         }
 
+        private int getPreviosSpeedX() {
+            return getPreviousPosition().x - getPreviousPreviousPosition().x;
+        }
+
         private List<BombDistance> getLastTwoBombDistances() {
             return bombDistances.subList(bombDistances.size() - 2, bombDistances.size());
         }
@@ -242,12 +246,12 @@ class Player {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
-                    if (yMin < getPreviousPosition().y) {
+                    if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
                         yMin = getPreviousPosition().y;
                     }
                 } else {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    if (yMax > getPreviousPosition().y) {
+                    if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
                         yMax = getPreviousPosition().y;
                     }
                 }
@@ -256,12 +260,12 @@ class Player {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    if (yMax > getPreviousPosition().y) {
+                    if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
                         yMax = getPreviousPosition().y;
                     }
                 } else {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
-                    if (yMin < getPreviousPosition().y) {
+                    if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
                         yMin = getPreviousPosition().y;
                     }
                 }
@@ -305,12 +309,12 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                    if (xMin < getPreviousPosition().x) {
+                    if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
                         xMin = getPreviousPosition().x;
                     }
                 } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    if (xMax > getPreviousPosition().x) {
+                    if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
                         xMax = getPreviousPosition().x;
                     }
                 }
@@ -319,12 +323,12 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    if (xMax > getPreviousPosition().x) {
+                    if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
                         xMax = getPreviousPosition().x;
                     }
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                    if (xMin < getPreviousPosition().x) {
+                    if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
                         xMin = getPreviousPosition().x;
                     }
                 }
@@ -356,6 +360,14 @@ class Player {
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
             System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(x, getLastPosition().y);
+        }
+
+        private boolean xSpeedTheSame() {
+            return positions.size() > 2 && getLastSpeedX()/(double) getPreviosSpeedX() > 0;
+        }
+
+        private boolean ySpeedTheSame() {
+            return positions.size() > 2 && getLastSpeedY()/(double) getPreviosSpeedY() > 0;
         }
 
         private boolean isXNotValid(int x) {
