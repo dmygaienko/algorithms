@@ -204,6 +204,15 @@ class Player {
                 } else {
                     xMin = xMin + (getLastPosition().x - xMin)/2;
                 }
+
+            } else if (positions.size() > 0 && bombDistance.equals(BombDistance.SAME)) {
+                if (getPreviousPosition().x < getLastPosition().x) {
+                    xMax = getLastPosition().x;
+                    xMin = getPreviousPosition().x;
+                } else {
+                    xMax = getPreviousPosition().x;
+                    xMin = getLastPosition().x;
+                }
             }
 
             int x = xMin + (xMax - xMin)/2;
