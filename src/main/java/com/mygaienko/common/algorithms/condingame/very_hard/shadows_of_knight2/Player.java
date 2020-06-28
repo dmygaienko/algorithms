@@ -21,10 +21,10 @@ class Player {
 
             System.err.println(bombDistance);
             game.play(bombDistance);
-
         }
 
     }
+
     enum BombDistance {
         UNKNOWN, SAME, WARMER, COLDER
     }
@@ -198,7 +198,9 @@ class Player {
         public void play(BombDistance bombDistance) {
             if (!axisFound && oneWarmOneCold()) {
                 axisFound = true;
-                addPosition(getPreviousPosition());
+                Point previousPosition = getPreviousPosition();
+                addPosition(previousPosition);
+                System.out.println("Axis found - " + previousPosition);
             }
 
             if (axisFound) {
@@ -248,6 +250,7 @@ class Player {
             }
             int y = yMin + (yMax - yMin)/2;
 
+            System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             return new Point(getLastPosition().x, y);
         }
 
@@ -278,7 +281,8 @@ class Player {
                 }
             }
             int x = xMin + (xMax - xMin)/2;
-            
+
+            System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
             return new Point(x, getLastPosition().y);
         }
 
