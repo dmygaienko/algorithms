@@ -204,6 +204,7 @@ class Player {
                 positions.clear();
                 addPosition(previousPosition);
                 System.err.println("Axis found - " + previousPosition);
+                i = 0;
             }
 
             if (axisFound) {
@@ -249,10 +250,10 @@ class Player {
         private Point computeY(BombDistance bombDistance) {
             double modificator = DEFAULT;
 
-            if (positions.size() == 1) {
-                int sameY = (int) Math.round((yMax + yMin)/2d);
-                return new Point(getLastPosition().x, sameY);
-            }
+//            if (positions.size() == 1) {
+//                int sameY = (int) Math.round((yMax + yMin)/2d);
+//                return new Point(getLastPosition().x, sameY);
+//            }
 
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
@@ -293,26 +294,41 @@ class Player {
 
 //            int y = yMin + yMax - getLastPosition().y;
 //            int y = (int) Math.round((yMax + yMin)/2d);
+//            int y = (centre - getLastPosition().y) + centre;
             int centre = (int) Math.round((yMax + yMin)/2d);
-            int y = (centre - getLastPosition().y) + centre;
+            // int centre = (yMax + yMin)/2;
+
+            int y;
+            if (centre - getLastPosition().y > 0) {
+                y = centre + (int) Math.round((yMax - centre)/2d);
+            } else {
+                y = centre - (int) Math.round((centre - yMin)/2d);
+            }
+
             if (isYNotValid(y) || lowSpeedStrategy()) {
                 y = centre;
             }
 
             if (y == getLastPosition().y) {
+                System.err.println("y " + y);
                 y = y + (getLastSpeedY()/Math.abs(getLastSpeedY()));
-
+                System.err.println("getLastSpeedY " + getLastSpeedY());
+                System.err.println("Math.abs(getLastSpeedY()) " + Math.abs(getLastSpeedY()));
+                System.err.println("y " + y);
                 if (isYNotValid(y)) {
                     y = y - (getLastSpeedY()/Math.abs(getLastSpeedY()));
+                    System.err.println("y " + y);
                 }
 
-                if (y == getLastPosition().y) {
-                    axisFound = true;
-                    Point lastPosition = getLastPosition();
-                    positions.clear();
-                    positions.add(lastPosition);
-                    return computeX(BombDistance.UNKNOWN);
-                }
+                 if (y == getLastPosition().y) {
+                     axisFound = true;
+                     Point lastPosition = getLastPosition();
+                     positions.clear();
+                     positions.add(lastPosition);
+                     System.err.println("Axis found after SAME");
+                     i = 0;
+                     return computeX(BombDistance.UNKNOWN);
+                 }
             }
 
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
@@ -322,15 +338,15 @@ class Player {
 
         private boolean lowSpeedStrategy() {
             return i > (maxTurns / 4 + 2);
-            // return false;
+            //  return false;
         }
 
         private Point computeX(BombDistance bombDistance) {
             double modificator = DEFAULT;
-            if (positions.size() == 1) {
-                int newX = (int) Math.round((xMax + xMin)/2d);
-                return new Point(newX, getLastPosition().y);
-            }
+//            if (positions.size() == 1) {
+//                int newX = (int) Math.round((xMax + xMin)/2d);
+//                return new Point(newX, getLastPosition().y);
+//            }
 
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
@@ -372,9 +388,18 @@ class Player {
 //            int x = xMin + xMax - getLastPosition().x;
 //            int x = (int) Math.round((xMax + xMin)/2d);
             // int x = xMin + (int) (Math.round((xMax - xMin)/2d) * modificator);
+            // int x = (centre - getLastPosition().x) + centre;
 
             int centre = (int) Math.round((xMax + xMin)/2d);
-            int x = (centre - getLastPosition().x) + centre;
+            // int centre = (xMax + xMin)/2;
+
+            int x;
+            if (centre - getLastPosition().x > 0) {
+                x = centre + (int) Math.round((xMax - centre)/2d);
+            } else {
+                x = centre - (int) Math.round((centre - xMin)/2d);
+            }
+
             if (isXNotValid(x) || lowSpeedStrategy()) {
                 x = centre;
             }
