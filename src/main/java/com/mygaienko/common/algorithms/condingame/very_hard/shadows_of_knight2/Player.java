@@ -325,7 +325,7 @@ class Player {
             if (yMin == yMax) {
                 y = yMin;
             } else {
-                y = yMin + yMax - getLastPosition().y + apply;
+                y = yMin + yMax - getLastPosition().y + apply/2;
                 System.err.println("Go to mirroring y - " + y);
             }
 
@@ -417,7 +417,7 @@ class Player {
             if (xMin == xMax) {
                 x = xMin;
             } else {
-                x = xMin + xMax - getLastPosition().x + apply;
+                x = xMin + xMax - getLastPosition().x + apply/2;
                 System.err.println("Go to mirroring x - " + x);
             }
 
