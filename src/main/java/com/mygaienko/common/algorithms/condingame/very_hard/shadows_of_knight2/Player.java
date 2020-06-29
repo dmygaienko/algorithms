@@ -301,9 +301,13 @@ class Player {
                 axisFound = true;
                 position = new Point(getLastPosition().x, sameY);
                 positions.clear();
-                positions.add(position);
                 System.err.println("Axis found after SAME: " + position);
-                return computeX(BombDistance.UNKNOWN);
+                if (map.width > 1) {
+                    positions.add(position);
+                    return computeX(BombDistance.UNKNOWN);
+                } else {
+                    return position;
+                }
             }
 
 //            int y = yMin + yMax - getLastPosition().y;
@@ -339,7 +343,7 @@ class Player {
                     System.err.println("new y " + y);
                 }
 
-                if (y == getLastPosition().y) {
+                if (y == getLastPosition().y && map.width > 1) {
                     axisFound = true;
                     Point lastPosition = getLastPosition();
                     positions.clear();
@@ -415,7 +419,7 @@ class Player {
                 System.err.println("Go to center - x " + x);
             }
 
-            if (x == getLastPosition().x) {
+            if (x == getLastPosition().x && positions.size() > 2) {
                 System.err.println("X the same as previous: x - " + x);
                 x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
                 System.err.println("new x - " + x);
@@ -451,9 +455,9 @@ class Player {
         }
 
         private boolean lowSpeedStrategy() {
-            // return i > (maxTurns / 4) * 0.6;
-            return i > (maxTurns / 2) * 0.8;
-            // return false;
+            // return i > (maxTurns / 4) * 1.5;
+            // return i > (maxTurns / 2) * 0.7;
+            return false;
         }
 
         private void setXMaxCloser() {
