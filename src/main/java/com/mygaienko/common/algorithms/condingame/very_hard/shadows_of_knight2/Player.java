@@ -335,15 +335,22 @@ class Player {
             }
 
             if (y == getLastPosition().y) {
-                System.err.println("Y the same as previous: y - " + y);
-                y = y + (getLastSpeedY()/Math.abs(getLastSpeedY()));
-                System.err.println("getLastSpeedY " + getLastSpeedY());
-                System.err.println("Math.abs(getLastSpeedY()) " + Math.abs(getLastSpeedY()));
-                System.err.println("new y " + y);
-                if (isYNotValid(y)) {
-                    System.err.println("Y the same as previous: not valid: y - " + y);
-                    y = y - (getLastSpeedY()/Math.abs(getLastSpeedY()));
+
+                if (positions.size() > 1) {
+                    System.err.println("Y the same as previous: y - " + y);
+                    y = y + (getLastSpeedY() / Math.abs(getLastSpeedY()));
+                    System.err.println("getLastSpeedY " + getLastSpeedY());
+                    System.err.println("Math.abs(getLastSpeedY()) " + Math.abs(getLastSpeedY()));
                     System.err.println("new y " + y);
+                    if (isYNotValid(y)) {
+                        System.err.println("Y the same as previous: not valid: y - " + y);
+                        y = y - (getLastSpeedY() / Math.abs(getLastSpeedY()));
+                        System.err.println("new y " + y);
+                    }
+                } else if ( y + 1 <= yMax ){
+                    y = y + 1;
+                } else {
+                    y = y - 1;
                 }
 
                 if (y == getLastPosition().y && map.width > 1) {
@@ -429,7 +436,7 @@ class Player {
             System.err.println("getLastPosition() - " + getLastPosition());
             if (x == getLastPosition().x) {
 
-                if (positions.size() > 2) {
+                if (positions.size() > 1) {
                     System.err.println("X the same as previous: x - " + x);
                     x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
                     System.err.println("new x - " + x);
