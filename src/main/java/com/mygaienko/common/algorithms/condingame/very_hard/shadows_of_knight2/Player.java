@@ -157,6 +157,9 @@ class Player {
         List<BombDistance> bombDistances = new ArrayList<>();
         List<Point> positions = new ArrayList<>();
 
+        Set<Integer> visitedX = new HashSet<>();
+        Set<Integer> visitedY = new HashSet<>();
+
         private List<BombDistance> warmerColder = Arrays.asList(BombDistance.WARMER, BombDistance.COLDER);
 
         public Game(Map map, int maxTurns, Point position) {
@@ -181,13 +184,18 @@ class Player {
             System.err.println(String.format("center %s", center));
             System.err.println(String.format("yMin - %s, yMax - %s", yMin, yMax));
             System.err.println(String.format("xMin - %s, xMax - %s", xMin, xMax));
+            System.err.println(String.format("visitedY - %s", visitedY));
+            System.err.println(String.format("visitedX - %s", visitedX));
 
             addPosition(position);
+
             System.out.println(position);
         }
 
         private void addPosition(Point position) {
             positions.add(position);
+            visitedX.add(position.x);
+            visitedY.add(position.y);
         }
 
         @Override
@@ -254,8 +262,6 @@ class Player {
         }
 
         private Point computeY(BombDistance bombDistance) {
-            double modificator = DEFAULT;
-
 //            if (positions.size() == 1) {
 //                int sameY = (int) Math.round((yMax + yMin)/2d);
 //                return new Point(getLastPosition().x, sameY);
@@ -266,11 +272,9 @@ class Player {
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
                     setYMinCloser();
-                    modificator = DOUBLE_MODIFICATOR;
                 } else {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
                     setYMaxCloser();
-                    modificator = HALF_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
@@ -278,11 +282,9 @@ class Player {
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
                     setYMaxCloser();
-                    modificator = HALF_MODIFICATOR;
                 } else {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
                     setYMinCloser();
-                    modificator = DOUBLE_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -295,7 +297,13 @@ class Player {
                 }
 
                 int sameY = (int) Math.round((yMax + yMin)/2d);
-                return new Point(getLastPosition().x, sameY);
+
+                axisFound = true;
+                position = new Point(getLastPosition().x, sameY);
+                positions.clear();
+                positions.add(position);
+                System.err.println("Axis found after SAME: " + position);
+                return computeX(BombDistance.UNKNOWN);
             }
 
 //            int y = yMin + yMax - getLastPosition().y;
@@ -314,8 +322,8 @@ class Player {
             }
 
             if (isYNotValid(y) || lowSpeedStrategy()) {
-                y = center;
-                System.err.println("Go to center");
+                y = getCenterOrNextYNotVisited();
+                System.err.println("Go to center - y " + y);
             }
 
             if (y == getLastPosition().y) {
@@ -344,8 +352,29 @@ class Player {
             return new Point(getLastPosition().x, y);
         }
 
+        private int getCenterOrNextXNotVisited() {
+            boolean contains = visitedX.contains(center);
+            return !contains ? center : findNextXNotVisited(xMin - 1);
+        }
+
+        private int findNextXNotVisited(int prev) {
+            int next = prev + 1;
+            boolean contains = visitedX.contains(next);
+            return !contains ? next : findNextXNotVisited(next);
+        }
+
+        private int getCenterOrNextYNotVisited() {
+            boolean contains = visitedY.contains(center);
+            return !contains ? center : findNextYNotVisited(yMin - 1);
+        }
+
+        private int findNextYNotVisited(int prev) {
+            int next = prev + 1;
+            boolean contains = visitedY.contains(next);
+            return !contains ? next : findNextYNotVisited(next);
+        }
+
         private Point computeX(BombDistance bombDistance) {
-            double modificator = DEFAULT;
 //            if (positions.size() == 1) {
 //                int newX = (int) Math.round((xMax + xMin)/2d);
 //                return new Point(newX, getLastPosition().y);
@@ -356,11 +385,9 @@ class Player {
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
                     setXMinCloser();
-                    modificator = DOUBLE_MODIFICATOR;
                 } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
                     setXMaxCloser();
-                    modificator = HALF_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
@@ -368,11 +395,9 @@ class Player {
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
                     setXMaxCloser();
-                    modificator = HALF_MODIFICATOR;
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
                     setXMinCloser();
-                    modificator = DOUBLE_MODIFICATOR;
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -406,8 +431,8 @@ class Player {
             }
 
             if (isXNotValid(x) || lowSpeedStrategy()) {
-                x = center;
-                System.err.println("Go to center");
+                x = getCenterOrNextXNotVisited();
+                System.err.println("Go to center - x " + x);
             }
 
             if (x == getLastPosition().x) {
@@ -426,32 +451,31 @@ class Player {
         }
 
         private boolean lowSpeedStrategy() {
-            return i > (maxTurns / 4 + 2);
-            //  return false;
+            return i > (maxTurns / 4) * 0.6;
         }
 
         private void setXMaxCloser() {
-//            if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
-//                xMax = getPreviousPosition().x;
-//            }
+            if (xMax > getPreviousPosition().x && xSpeedTheSame()) {
+                xMax = getPreviousPosition().x;
+            }
         }
 
         private void setXMinCloser() {
-//            if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
-//                xMin = getPreviousPosition().x;
-//            }
+            if (xMin < getPreviousPosition().x && xSpeedTheSame()) {
+                xMin = getPreviousPosition().x;
+            }
         }
 
         private void setYMaxCloser() {
-//            if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
-//                yMax = getPreviousPosition().y;
-//            }
+            if (yMax > getPreviousPosition().y && ySpeedTheSame()) {
+                yMax = getPreviousPosition().y;
+            }
         }
 
         private void setYMinCloser() {
-//            if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
-//                yMin = getPreviousPosition().y;
-//            }
+            if (yMin < getPreviousPosition().y && ySpeedTheSame()) {
+                yMin = getPreviousPosition().y;
+            }
         }
 
         private boolean xSpeedTheSame() {
