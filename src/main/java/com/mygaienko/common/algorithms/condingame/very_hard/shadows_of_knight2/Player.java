@@ -323,8 +323,8 @@ class Player {
             center = (int) Math.round((yMax + yMin)/2d);
             // int centre = (yMax + yMin)/2;
 
-            boolean closeToCenterFromMin = (center - getLastPosition().y) < (getLastPosition().y - yMin)/3;
-            boolean closeToCenterFromMax = (center - getLastPosition().y) < (yMax - getLastPosition().y)/3;
+            boolean closeToCenterFromMin = getLastPosition().y < center && (center - getLastPosition().y) < (getLastPosition().y - yMin)/2;
+            boolean closeToCenterFromMax = getLastPosition().y > center && (getLastPosition().y - center) < (yMax - getLastPosition().y)/2;
 
             int y;
             if (yMin == yMax) {
@@ -332,12 +332,14 @@ class Player {
             } else if (closeToCenterFromMax && firstYMove) {
                 y = yMin + (int) Math.round((yMax - center)/2d);
                 firstYMove = false;
+                System.err.println("FirstMove:closeToCenterFromMax");
             } else if (closeToCenterFromMin && firstYMove) {
                 y = yMax - (int) Math.round((yMax - center)/2d);
                 firstYMove = false;
+                System.err.println("FirstMove:closeToCenterFromMin");
             } else {
                 y = yMin + yMax - getLastPosition().y + apply/2;
-                System.err.println("Go to mirroring y - " + y);
+                System.err.println("Go to mirroring y - " + y + ",apply - " + apply);
             }
 
             if (isYNotValid(y) || lowSpeedStrategy() || y == getLastPosition().y) {
@@ -431,8 +433,8 @@ class Player {
             center = (int) Math.round((xMax + xMin)/2d);
             // int centre = (xMax + xMin)/2;
 
-            boolean closeToCenterFromMin = (center - getLastPosition().x) < (getLastPosition().x - xMin)/3;
-            boolean closeToCenterFromMax = (center - getLastPosition().x) < (xMax - getLastPosition().x)/3;
+            boolean closeToCenterFromMin = getLastPosition().x < center && (center - getLastPosition().x) < (getLastPosition().x - xMin)/2;
+            boolean closeToCenterFromMax = getLastPosition().x > center && (getLastPosition().x - center) < (xMax - getLastPosition().x)/2;
 
             int x;
             if (xMin == xMax) {
