@@ -267,23 +267,28 @@ class Player {
 //                return new Point(getLastPosition().x, sameY);
 //            }
 
+            int apply = 0;
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
-                    yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
+                    apply = (int) Math.round((getLastPosition().y - yMin)/2d);
+                    yMin = yMin + apply;
 //                    setYMinCloser();
                 } else {
-                    yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    apply = - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    yMax = yMax + apply;
 //                    setYMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
-                    yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    apply = - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    yMax = yMax + apply;
 //                    setYMaxCloser();
                 } else {
-                    yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
+                    apply = (int) Math.round((getLastPosition().y - yMin)/2d);
+                    yMin = yMin + apply;
 //                    setYMinCloser();
                 }
 
@@ -320,11 +325,11 @@ class Player {
             if (yMin == yMax) {
                 y = yMin;
             } else {
-                y = yMin + yMax - getLastPosition().y;
+                y = yMin + yMax - getLastPosition().y + apply;
                 System.err.println("Go to mirroring y - " + y);
             }
 
-            if (isYNotValid(y) || lowSpeedStrategy()) {
+            if (isYNotValid(y) || lowSpeedStrategy() || y == getLastPosition().y) {
                 y = center;
                 System.err.println("Go to center - y " + y);
             }
@@ -362,23 +367,28 @@ class Player {
 //                return new Point(newX, getLastPosition().y);
 //            }
 
+            int apply = 0;
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
+                    apply = (int) Math.round((getLastPosition().x - xMin)/2d);
+                    xMin = xMin + apply;
 //                    setXMinCloser();
                 } else if (getPreviousPosition().x > getLastPosition().x) {
-                    xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    apply = - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    xMax = xMax + apply;
 //                    setXMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    apply = - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    xMax = xMax + apply;
 //                    setXMaxCloser();
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
-                    xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
+                    apply = (int) Math.round((getLastPosition().x - xMin)/2d);
+                    xMin = xMin + apply;
 //                    setXMinCloser();
                 }
 
@@ -407,24 +417,33 @@ class Player {
             if (xMin == xMax) {
                 x = xMin;
             } else {
-                x = xMin + xMax - getLastPosition().x;
+                x = xMin + xMax - getLastPosition().x + apply;
                 System.err.println("Go to mirroring x - " + x);
             }
 
-            if (isXNotValid(x) || lowSpeedStrategy()) {
+            if (isXNotValid(x) || lowSpeedStrategy() || x == getLastPosition().x) {
                 x = center;
                 System.err.println("Go to center - x " + x);
             }
 
-            if (x == getLastPosition().x && positions.size() > 2) {
-                System.err.println("X the same as previous: x - " + x);
-                x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
-                System.err.println("new x - " + x);
-                if (isXNotValid(x)) {
-                    System.err.println("X the same as previous: not valid: x - " + x);
-                    x = x - (getLastSpeedX()/Math.abs(getLastSpeedX()));
+            System.err.println("getLastPosition() - " + getLastPosition());
+            if (x == getLastPosition().x) {
+
+                if (positions.size() > 2) {
+                    System.err.println("X the same as previous: x - " + x);
+                    x = x + (getLastSpeedX()/Math.abs(getLastSpeedX()));
                     System.err.println("new x - " + x);
+                    if (isXNotValid(x)) {
+                        System.err.println("X the same as previous: not valid: x - " + x);
+                        x = x - (getLastSpeedX()/Math.abs(getLastSpeedX()));
+                        System.err.println("new x - " + x);
+                    }
+                } else if ( x + 1 <= xMax ){
+                    x = x + 1;
+                } else {
+                    x = x - 1;
                 }
+
             }
 
 
