@@ -314,7 +314,8 @@ class Player {
 
             int y;
             if (center - getLastPosition().y > 0) {
-                y = center + (int) Math.round((yMax - center)/2d);
+//                y = center + (int) Math.round((yMax - center)/2d);
+                y = (center - getLastPosition().y) + center;
                 System.err.println("Go behind center");
             } else {
                 y = center - (int) Math.round((center - yMin)/2d);
@@ -322,7 +323,7 @@ class Player {
             }
 
             if (isYNotValid(y) || lowSpeedStrategy()) {
-                y = getCenterOrNextYNotVisited();
+                y = center;
                 System.err.println("Go to center - y " + y);
             }
 
@@ -349,29 +350,7 @@ class Player {
                 }
             }
 
-            return new Point(getLastPosition().x, y);
-        }
-
-        private int getCenterOrNextXNotVisited() {
-            boolean contains = visitedX.contains(center);
-            return !contains ? center : findNextXNotVisited(xMin - 1);
-        }
-
-        private int findNextXNotVisited(int prev) {
-            int next = prev + 1;
-            boolean contains = visitedX.contains(next);
-            return !contains ? next : findNextXNotVisited(next);
-        }
-
-        private int getCenterOrNextYNotVisited() {
-            boolean contains = visitedY.contains(center);
-            return !contains ? center : findNextYNotVisited(yMin - 1);
-        }
-
-        private int findNextYNotVisited(int prev) {
-            int next = prev + 1;
-            boolean contains = visitedY.contains(next);
-            return !contains ? next : findNextYNotVisited(next);
+            return new Point(getLastPosition().x, getOrNextYNotVisited(y));
         }
 
         private Point computeX(BombDistance bombDistance) {
@@ -416,14 +395,15 @@ class Player {
 //            int x = xMin + xMax - getLastPosition().x;
 //            int x = (int) Math.round((xMax + xMin)/2d);
             // int x = xMin + (int) (Math.round((xMax - xMin)/2d) * modificator);
-            // int x = (centre - getLastPosition().x) + centre;
+//             int x = (center - getLastPosition().x) + center;
 
             center = (int) Math.round((xMax + xMin)/2d);
             // int centre = (xMax + xMin)/2;
 
             int x;
             if (center - getLastPosition().x > 0) {
-                x = center + (int) Math.round((xMax - center)/2d);
+//                x = center + (int) Math.round((xMax - center)/2d);
+                x = (center - getLastPosition().x) + center;
                 System.err.println("Go behind center");
             } else {
                 x = center - (int) Math.round((center - xMin)/2d);
@@ -431,7 +411,7 @@ class Player {
             }
 
             if (isXNotValid(x) || lowSpeedStrategy()) {
-                x = getCenterOrNextXNotVisited();
+                x = center;
                 System.err.println("Go to center - x " + x);
             }
 
@@ -447,11 +427,33 @@ class Player {
             }
 
 
-            return new Point(x, getLastPosition().y);
+            return new Point(getOrNextXNotVisited(x), getLastPosition().y);
+        }
+
+        private int getOrNextXNotVisited(int x) {
+            boolean contains = visitedX.contains(x);
+            return !contains ? x : findNextXNotVisited(xMin);
+        }
+
+        private int findNextXNotVisited(int next) {
+            boolean contains = visitedX.contains(next);
+            return !contains ? next : findNextXNotVisited(next + 1);
+        }
+
+        private int getOrNextYNotVisited(int y) {
+            boolean contains = visitedY.contains(y);
+            return !contains ? y : findNextYNotVisited(yMin);
+        }
+
+        private int findNextYNotVisited(int next) {
+            boolean contains = visitedY.contains(next);
+            return !contains ? next : findNextYNotVisited(next + 1);
         }
 
         private boolean lowSpeedStrategy() {
-            return i > (maxTurns / 4) * 0.6;
+            // return i > (maxTurns / 4) * 0.6;
+            return i > (maxTurns / 2) * 0.8;
+            // return false;
         }
 
         private void setXMaxCloser() {
