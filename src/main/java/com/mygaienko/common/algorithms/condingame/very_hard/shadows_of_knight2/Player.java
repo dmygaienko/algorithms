@@ -271,20 +271,20 @@ class Player {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
-                    setYMinCloser();
+//                    setYMinCloser();
                 } else {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    setYMaxCloser();
+//                    setYMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = yMax - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    setYMaxCloser();
+//                    setYMaxCloser();
                 } else {
                     yMin = yMin + (int) Math.round((getLastPosition().y - yMin)/2d);
-                    setYMinCloser();
+//                    setYMinCloser();
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -319,13 +319,9 @@ class Player {
             int y;
             if (yMin == yMax) {
                 y = yMin;
-            } else if (center - getLastPosition().y > 0) {
-//                y = center + (int) Math.round((yMax - center)/2d);
-                y = (center - getLastPosition().y) + center;
-                System.err.println("Go behind center");
             } else {
-                y = center - (int) Math.round((center - yMin)/2d);
-                System.err.println("Ge before center");
+                y = yMin + yMax - getLastPosition().y;
+                System.err.println("Go to mirroring y - " + y);
             }
 
             if (isYNotValid(y) || lowSpeedStrategy()) {
@@ -356,7 +352,8 @@ class Player {
                 }
             }
 
-            return new Point(getLastPosition().x, getOrNextYNotVisited(y));
+//            return new Point(getLastPosition().x, getOrNextYNotVisited(y));
+            return new Point(getLastPosition().x, y);
         }
 
         private Point computeX(BombDistance bombDistance) {
@@ -369,20 +366,20 @@ class Player {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                    setXMinCloser();
+//                    setXMinCloser();
                 } else if (getPreviousPosition().x > getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    setXMaxCloser();
+//                    setXMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
                     xMax = xMax - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    setXMaxCloser();
+//                    setXMaxCloser();
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     xMin = xMin + (int) Math.round((getLastPosition().x - xMin)/2d);
-                    setXMinCloser();
+//                    setXMinCloser();
                 }
 
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
@@ -409,13 +406,9 @@ class Player {
             int x;
             if (xMin == xMax) {
                 x = xMin;
-            } else if (center - getLastPosition().x > 0) {
-//                x = center + (int) Math.round((xMax - center)/2d);
-                x = (center - getLastPosition().x) + center;
-                System.err.println("Go behind center");
             } else {
-                x = center - (int) Math.round((center - xMin)/2d);
-                System.err.println("Go before center");
+                x = xMin + xMax - getLastPosition().x;
+                System.err.println("Go to mirroring x - " + x);
             }
 
             if (isXNotValid(x) || lowSpeedStrategy()) {
@@ -435,7 +428,8 @@ class Player {
             }
 
 
-            return new Point(getOrNextXNotVisited(x), getLastPosition().y);
+//            return new Point(getOrNextXNotVisited(x), getLastPosition().y);
+            return new Point(x, getLastPosition().y);
         }
 
         private int getOrNextXNotVisited(int x) {
