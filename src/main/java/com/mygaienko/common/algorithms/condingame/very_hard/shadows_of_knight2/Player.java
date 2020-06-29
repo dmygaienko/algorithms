@@ -445,7 +445,7 @@ class Player {
 
         private int findNextXNotVisited(int next) {
             boolean contains = visitedX.contains(next);
-            return (!contains || ((xMax - xMin) <= 1 && next == xMax)) ? next : findNextXNotVisited(next + 1);
+            return (!contains || ((xMax - xMin) <= 1 && next == xMax || next + 1 > xMax)) ? next : findNextXNotVisited(next + 1);
         }
 
         private int getOrNextYNotVisited(int y) {
@@ -455,7 +455,7 @@ class Player {
 
         private int findNextYNotVisited(int next) {
             boolean contains = visitedY.contains(next);
-            return (!contains || ((yMax - yMin) <= 1 && next == yMax)) ? next : findNextYNotVisited(next + 1);
+            return (!contains || ((yMax - yMin) <= 1 && next == yMax || next + 1 > yMax)) ? next : findNextYNotVisited(next + 1);
         }
 
         private boolean lowSpeedStrategy() {
