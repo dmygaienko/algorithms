@@ -317,7 +317,9 @@ class Player {
             // int centre = (yMax + yMin)/2;
 
             int y;
-            if (center - getLastPosition().y > 0) {
+            if (yMin == yMax) {
+                y = yMin;
+            } else if (center - getLastPosition().y > 0) {
 //                y = center + (int) Math.round((yMax - center)/2d);
                 y = (center - getLastPosition().y) + center;
                 System.err.println("Go behind center");
@@ -405,7 +407,9 @@ class Player {
             // int centre = (xMax + xMin)/2;
 
             int x;
-            if (center - getLastPosition().x > 0) {
+            if (xMin == xMax) {
+                x = xMin;
+            } else if (center - getLastPosition().x > 0) {
 //                x = center + (int) Math.round((xMax - center)/2d);
                 x = (center - getLastPosition().x) + center;
                 System.err.println("Go behind center");
