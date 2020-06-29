@@ -153,6 +153,8 @@ class Player {
         int center = 0;
 
         boolean axisFound = false;
+        boolean firstXMove = true;
+        boolean firstYMove = true;
 
         List<BombDistance> bombDistances = new ArrayList<>();
         List<Point> positions = new ArrayList<>();
@@ -321,9 +323,18 @@ class Player {
             center = (int) Math.round((yMax + yMin)/2d);
             // int centre = (yMax + yMin)/2;
 
+            boolean closeToCenterFromMin = (center - getLastPosition().y) < (getLastPosition().y - yMin)/3;
+            boolean closeToCenterFromMax = (center - getLastPosition().y) < (yMax - getLastPosition().y)/3;
+
             int y;
             if (yMin == yMax) {
                 y = yMin;
+            } else if (closeToCenterFromMax && firstYMove) {
+                y = yMin + (int) Math.round((yMax - center)/2d);
+                firstYMove = false;
+            } else if (closeToCenterFromMin && firstYMove) {
+                y = yMax - (int) Math.round((yMax - center)/2d);
+                firstYMove = false;
             } else {
                 y = yMin + yMax - getLastPosition().y + apply/2;
                 System.err.println("Go to mirroring y - " + y);
@@ -420,9 +431,18 @@ class Player {
             center = (int) Math.round((xMax + xMin)/2d);
             // int centre = (xMax + xMin)/2;
 
+            boolean closeToCenterFromMin = (center - getLastPosition().x) < (getLastPosition().x - xMin)/3;
+            boolean closeToCenterFromMax = (center - getLastPosition().x) < (xMax - getLastPosition().x)/3;
+
             int x;
             if (xMin == xMax) {
                 x = xMin;
+            } else if (closeToCenterFromMax && firstXMove) {
+                x = xMin + (int) Math.round((xMax - center)/2d);
+                firstXMove = false;
+            } else if (closeToCenterFromMin && firstXMove) {
+                x = xMax - (int) Math.round((xMax - center)/2d);
+                firstXMove = false;
             } else {
                 x = xMin + xMax - getLastPosition().x + apply/2;
                 System.err.println("Go to mirroring x - " + x);
