@@ -493,11 +493,11 @@ class Player {
         }
 
         private boolean isXNotValid(int x) {
-            return x < 0 || x >= map.width;
+            return x < 0 || x >= map.width || x < xMin || x > xMax;
         }
 
         private boolean isYNotValid(int y) {
-            return y < 0 || y >= map.height;
+            return y < 0 || y >= map.height || y < yMin || y > yMax;
         }
 
         private Point getLastPosition() {
