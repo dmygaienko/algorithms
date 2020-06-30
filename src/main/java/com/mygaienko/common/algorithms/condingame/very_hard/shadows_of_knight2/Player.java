@@ -281,7 +281,7 @@ class Player {
                     yMax = yMax + apply;
 //                    setYMaxCloser();
                 }
-
+                System.err.println("apply - " + apply);
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
@@ -293,7 +293,7 @@ class Player {
                     yMin = yMin + apply;
 //                    setYMinCloser();
                 }
-
+                System.err.println("apply - " + apply);
             } else if (positions.size() > 1 && bombDistance.equals(BombDistance.SAME)) {
                 if (getPreviousPosition().y < getLastPosition().y) {
                     yMax = getLastPosition().y;
@@ -330,15 +330,15 @@ class Player {
             if (yMin == yMax) {
                 y = yMin;
             } else if (closeToCenterFromMax && firstYMove) {
-                y = yMin + (int) Math.round((yMax - center)/2d);
+                y = yMin + (int) Math.round((yMax - center)/4d);
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMax");
             } else if (closeToCenterFromMin && firstYMove) {
-                y = yMax - (int) Math.round((yMax - center)/2d);
+                y = yMax - (int) Math.round((yMax - center)/4d);
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMin");
             } else {
-                y = yMin + yMax - getLastPosition().y + apply/2;
+                y = yMin + yMax - getLastPosition().y + apply/2;;
                 System.err.println("Go to mirroring y - " + y + ",apply - " + apply);
             }
 
@@ -440,10 +440,10 @@ class Player {
             if (xMin == xMax) {
                 x = xMin;
             } else if (closeToCenterFromMax && firstXMove) {
-                x = xMin + (int) Math.round((xMax - center)/2d);
+                x = xMin + (int) Math.round((xMax - center)/4d);
                 firstXMove = false;
             } else if (closeToCenterFromMin && firstXMove) {
-                x = xMax - (int) Math.round((xMax - center)/2d);
+                x = xMax - (int) Math.round((xMax - center)/4d);
                 firstXMove = false;
             } else {
                 x = xMin + xMax - getLastPosition().x + apply/2;
