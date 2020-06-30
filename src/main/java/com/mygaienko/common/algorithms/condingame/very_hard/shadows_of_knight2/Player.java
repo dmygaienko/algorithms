@@ -276,6 +276,7 @@ class Player {
                     yMax = (getPreviousPosition().y + apply) < yMax ? (getPreviousPosition().y + apply) : yMax;
                 }
                 System.err.println("apply - " + apply);
+
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
@@ -398,18 +399,19 @@ class Player {
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    apply = (getLastPosition().x - xMin)/2;
-                    xMin = xMin + apply;
+                    apply = (getLastPosition().x - getPreviousPosition().x)/2;
+                    xMin = (getPreviousPosition().x + apply) > xMin ? (getPreviousPosition().x + apply) : xMin;
                 } else if (getPreviousPosition().x > getLastPosition().x) {
-                    apply = - (xMax - getLastPosition().x)/2;
-                    xMax = xMax + apply;
+                    apply = - (getPreviousPosition().x - getLastPosition().x)/2;
+                    xMax = (getPreviousPosition().x + apply) < xMax ? (getPreviousPosition().x + apply) : xMax;
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    apply = - (getLastPosition().x - (getPreviousPosition().x > xMin ? getPreviousPosition().x : xMin))/2;
-                    xMax = (getLastPosition().x  + apply) < xMin ? xMin : (getLastPosition().x  + apply);
+                    apply = (getLastPosition().x - getPreviousPosition().x)/2;
+                    xMax = (getPreviousPosition().x  + apply) < xMax ? (getPreviousPosition().x  + apply) : xMax;
+
                     if (xMax == getLastPosition().x && xMax != xMin) {
                         xMax=xMax - 1;
                     } else if (xMax > getLastPosition().x && xMax != xMin) {
@@ -417,8 +419,8 @@ class Player {
                     }
 
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
-                    apply = (getPreviousPosition().x - (getLastPosition().x > xMin ? getLastPosition().x : xMin))/2;
-                    xMin = (getLastPosition().x + apply) > xMax ? xMax : (getLastPosition().x + apply);
+                    apply = (getPreviousPosition().x - getLastPosition().x)/2;
+                    xMin = (getLastPosition().x + apply) > xMin ? (getLastPosition().x + apply) : xMin;
 
                     if (xMin == getLastPosition().x && xMax != xMin) {
                         xMin=xMin + 1;
