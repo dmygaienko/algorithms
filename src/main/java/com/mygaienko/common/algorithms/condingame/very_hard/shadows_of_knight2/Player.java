@@ -330,12 +330,12 @@ class Player {
             center = (int) Math.round((yMax + yMin)/2d);
             // int centre = (yMax + yMin)/2;
 
-            boolean closeToCenterFromMin = getLastPosition().y < center && (center - getLastPosition().y) < (getLastPosition().y - yMin)/2;
-            boolean closeToCenterFromMax = getLastPosition().y > center && (getLastPosition().y - center) < (yMax - getLastPosition().y)/2;
+            boolean closeToCenterFromMin = getLastPosition().y < center && (center - getLastPosition().y) < (getLastPosition().y - yMin)/4;
+            boolean closeToCenterFromMax = getLastPosition().y > center && (getLastPosition().y - center) < (yMax - getLastPosition().y)/4;
 
 
-            boolean closeToMin = getLastPosition().y < center && (getLastPosition().y - yMin) < (center - getLastPosition().y)/2;
-            boolean closeToMax = getLastPosition().y > center && (yMax - getLastPosition().y) < (getLastPosition().y - center)/2;
+            boolean closeToMin = getLastPosition().y < center && (getLastPosition().y - yMin) < (center - getLastPosition().y)/4;
+            boolean closeToMax = getLastPosition().y > center && (yMax - getLastPosition().y) < (getLastPosition().y - center)/4;
 
             int y;
             if (yMin == yMax) {
@@ -451,19 +451,19 @@ class Player {
             center = (int) Math.round((xMax + xMin)/2d);
             // int centre = (xMax + xMin)/2;
 
-            boolean closeToCenterFromMin = getLastPosition().x < center && (center - getLastPosition().x) < (getLastPosition().x - xMin)/2;
-            boolean closeToCenterFromMax = getLastPosition().x > center && (getLastPosition().x - center) < (xMax - getLastPosition().x)/2;
+            boolean closeToCenterFromMin = getLastPosition().x < center && (center - getLastPosition().x) < (getLastPosition().x - xMin)/4;
+            boolean closeToCenterFromMax = getLastPosition().x > center && (getLastPosition().x - center) < (xMax - getLastPosition().x)/4;
 
-            boolean closeToMin = getLastPosition().x < center && (getLastPosition().x - xMin) < (center - getLastPosition().x)/2;
-            boolean closeToMax = getLastPosition().x > center && (xMax - getLastPosition().x) < (getLastPosition().x - center)/2;
+            boolean closeToMin = getLastPosition().x < center && (getLastPosition().x - xMin) < (center - getLastPosition().x)/4;
+            boolean closeToMax = getLastPosition().x > center && (xMax - getLastPosition().x) < (getLastPosition().x - center)/4;
 
             int x;
             if (xMin == xMax) {
                 x = xMin;
-            } else if ((closeToCenterFromMax || closeToMax) && firstXMove) {
+            } else if ((closeToCenterFromMax || closeToMax) /*&& firstXMove*/) {
                 x = xMin + (int) Math.round((xMax - center)/2d);
                 firstXMove = false;
-            } else if ((closeToCenterFromMin || closeToMin) && firstXMove) {
+            } else if ((closeToCenterFromMin || closeToMin) /*&& firstXMove*/) {
                 x = xMax - (int) Math.round((xMax - center)/2d);
                 firstXMove = false;
             } else {
