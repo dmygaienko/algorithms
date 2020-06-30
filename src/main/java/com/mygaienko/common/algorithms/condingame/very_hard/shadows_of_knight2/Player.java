@@ -269,18 +269,18 @@ class Player {
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
-                    apply = (getLastPosition().y - yMin)/2;
-                    yMin = yMin + apply;
+                    apply = (getLastPosition().y - getPreviousPosition().y)/2;
+                    yMin = (getPreviousPosition().y + apply) > yMin ? (getPreviousPosition().y + apply) : yMin;
                 } else {
-                    apply = - (yMax - getLastPosition().y)/2;
-                    yMax = yMax + apply;
+                    apply = - (getPreviousPosition().y - getLastPosition().y)/2;
+                    yMax = (getPreviousPosition().y + apply) < yMax ? (getPreviousPosition().y + apply) : yMax;
                 }
                 System.err.println("apply - " + apply);
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
-                    apply = - (getLastPosition().y - getPreviousPosition().y)/2;
-                    yMax = (getLastPosition().y + apply) < yMin ? yMin : (getLastPosition().y + apply);
+                    apply = (getLastPosition().y - getPreviousPosition().y)/2;
+                    yMax = (getPreviousPosition().y + apply) < yMax ? (getPreviousPosition().y + apply) : yMax;
 
                     if (yMax == getLastPosition().y && yMax != yMin) {
                         yMax=yMax - 1;
@@ -290,7 +290,7 @@ class Player {
 
                 } else {
                     apply = (getPreviousPosition().y - getLastPosition().y)/2;
-                    yMin = (getLastPosition().y + apply) > yMax ? yMax : (getLastPosition().y + apply);
+                    yMin = (getLastPosition().y + apply) > yMin ? (getLastPosition().y + apply) : yMin;
 
                     if (yMin == getLastPosition().y && yMax != yMin) {
                         yMin=yMin + 1;
@@ -339,11 +339,11 @@ class Player {
             int y;
             if (yMin == yMax) {
                 y = yMin;
-            } else if ((closeToCenterFromMax || closeToMax) && firstYMove) {
+            } else if ((closeToCenterFromMax || closeToMax) /*&& firstYMove*/) {
                 y = yMin + (int) Math.round((yMax - center)/2d);
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMax");
-            } else if ((closeToCenterFromMin || closeToMin) && firstYMove) {
+            } else if ((closeToCenterFromMin || closeToMin) /*&& firstYMove*/) {
                 y = yMax - (int) Math.round((yMax - center)/2d);
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMin");
@@ -408,7 +408,7 @@ class Player {
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    apply = - (getLastPosition().x - getPreviousPosition().x)/2;
+                    apply = - (getLastPosition().x - (getPreviousPosition().x > xMin ? getPreviousPosition().x : xMin))/2;
                     xMax = (getLastPosition().x  + apply) < xMin ? xMin : (getLastPosition().x  + apply);
                     if (xMax == getLastPosition().x && xMax != xMin) {
                         xMax=xMax - 1;
@@ -417,7 +417,7 @@ class Player {
                     }
 
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
-                    apply = (getPreviousPosition().x - getLastPosition().x)/2;
+                    apply = (getPreviousPosition().x - (getLastPosition().x > xMin ? getLastPosition().x : xMin))/2;
                     xMin = (getLastPosition().x + apply) > xMax ? xMax : (getLastPosition().x + apply);
 
                     if (xMin == getLastPosition().x && xMax != xMin) {
