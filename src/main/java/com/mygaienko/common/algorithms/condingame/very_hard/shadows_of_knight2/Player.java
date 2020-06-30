@@ -288,16 +288,16 @@ class Player {
                     apply = - (int) Math.round((yMax - getLastPosition().y)/2d);
                     yMax = yMax + apply;
 //                    setYMaxCloser();
-                    if (yMax == getLastPosition().y) {
-                        yMax=yMax-1;
+                    if (yMax == getLastPosition().y && yMax != yMin) {
+                        yMax=yMax - 1;
 
                     }
                 } else {
                     apply = (int) Math.round((getLastPosition().y - yMin)/2d);
                     yMin = yMin + apply;
 //                    setYMinCloser();
-                    if (yMax == getLastPosition().y) {
-                        yMax=yMax-1;
+                    if (yMax == getLastPosition().y && yMax != yMin) {
+                        yMax=yMin + 1;
 
                     }
                 }
@@ -415,14 +415,14 @@ class Player {
                     apply = - (int) Math.round((xMax - getLastPosition().x)/2d);
                     xMax = xMax + apply;
 //                    setXMaxCloser();
-                    if (xMax == getLastPosition().x) {
+                    if (xMax == getLastPosition().x && xMax != xMin) {
                         xMax=xMax - 1;
                     }
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
                     apply = (int) Math.round((getLastPosition().x - xMin)/2d);
                     xMin = xMin + apply;
 //                    setXMinCloser();
-                    if (xMin == getLastPosition().x) {
+                    if (xMin == getLastPosition().x && xMax != xMin) {
                         xMin=xMin + 1;
                     }
 
