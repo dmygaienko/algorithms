@@ -264,41 +264,38 @@ class Player {
         }
 
         private Point computeY(BombDistance bombDistance) {
-//            if (positions.size() == 1) {
-//                int sameY = (int) Math.round((yMax + yMin)/2d);
-//                return new Point(getLastPosition().x, sameY);
-//            }
 
             int apply = 0;
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
-                    apply = (int) Math.round((getLastPosition().y - yMin)/2d);
+                    apply = (getLastPosition().y - yMin)/2;
                     yMin = yMin + apply;
-//                    setYMinCloser();
                 } else {
-                    apply = - (int) Math.round((yMax - getLastPosition().y)/2d);
+                    apply = - (yMax - getLastPosition().y)/2;
                     yMax = yMax + apply;
-//                    setYMaxCloser();
                 }
                 System.err.println("apply - " + apply);
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().y < getLastPosition().y) {
-                    apply = - (int) Math.round((yMax - getLastPosition().y)/2d);
-                    yMax = yMax + apply;
-//                    setYMaxCloser();
+                    apply = - (getLastPosition().y - getPreviousPosition().y)/2;
+                    yMax = (getLastPosition().y + apply) < yMin ? yMin : (getLastPosition().y + apply);
+
                     if (yMax == getLastPosition().y && yMax != yMin) {
                         yMax=yMax - 1;
-
+                    } else if (yMax > getLastPosition().y && yMax != yMin) {
+                        yMax=getLastPosition().y;
                     }
-                } else {
-                    apply = (int) Math.round((getLastPosition().y - yMin)/2d);
-                    yMin = yMin + apply;
-//                    setYMinCloser();
-                    if (yMax == getLastPosition().y && yMax != yMin) {
-                        yMax=yMin + 1;
 
+                } else {
+                    apply = (getPreviousPosition().y - getLastPosition().y)/2;
+                    yMin = (getLastPosition().y + apply) > yMax ? yMax : (getLastPosition().y + apply);
+
+                    if (yMin == getLastPosition().y && yMax != yMin) {
+                        yMin=yMin + 1;
+                    } else if (yMin < getLastPosition().y && yMax != yMin) {
+                        yMin=getLastPosition().y;
                     }
                 }
 
@@ -335,19 +332,23 @@ class Player {
             boolean closeToCenterFromMin = getLastPosition().y < center && (center - getLastPosition().y) < (getLastPosition().y - yMin)/2;
             boolean closeToCenterFromMax = getLastPosition().y > center && (getLastPosition().y - center) < (yMax - getLastPosition().y)/2;
 
+
+            boolean closeToMin = getLastPosition().y < center && (getLastPosition().y - yMin) < (center - getLastPosition().y)/2;
+            boolean closeToMax = getLastPosition().y > center && (yMax - getLastPosition().y) < (getLastPosition().y - center)/2;
+
             int y;
             if (yMin == yMax) {
                 y = yMin;
-            } else if (closeToCenterFromMax && firstYMove) {
-                y = yMin + (int) Math.round((yMax - center)/4d);
+            } else if ((closeToCenterFromMax || closeToMax) && firstYMove) {
+                y = yMin + (int) Math.round((yMax - center)/2d);
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMax");
-            } else if (closeToCenterFromMin && firstYMove) {
-                y = yMax - (int) Math.round((yMax - center)/4d);
+            } else if ((closeToCenterFromMin || closeToMin) && firstYMove) {
+                y = yMax - (int) Math.round((yMax - center)/2d);
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMin");
             } else {
-                y = yMin + yMax - getLastPosition().y + apply/2;;
+                y = yMin + yMax - getLastPosition().y;
                 System.err.println("Go to mirroring y - " + y + ",apply - " + apply);
             }
 
@@ -391,39 +392,38 @@ class Player {
         }
 
         private Point computeX(BombDistance bombDistance) {
-//            if (positions.size() == 1) {
-//                int newX = (int) Math.round((xMax + xMin)/2d);
-//                return new Point(newX, getLastPosition().y);
-//            }
 
             int apply = 0;
+
             if (positions.size() > 0 && BombDistance.WARMER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    apply = (int) Math.round((getLastPosition().x - xMin)/2d);
+                    apply = (getLastPosition().x - xMin)/2;
                     xMin = xMin + apply;
-//                    setXMinCloser();
                 } else if (getPreviousPosition().x > getLastPosition().x) {
-                    apply = - (int) Math.round((xMax - getLastPosition().x)/2d);
+                    apply = - (xMax - getLastPosition().x)/2;
                     xMax = xMax + apply;
-//                    setXMaxCloser();
                 }
 
             } else if (positions.size() > 1 && BombDistance.COLDER.equals(bombDistance)) {
 
                 if (getPreviousPosition().x < getLastPosition().x) {
-                    apply = - (int) Math.round((xMax - getLastPosition().x)/2d);
-                    xMax = xMax + apply;
-//                    setXMaxCloser();
+                    apply = - (getLastPosition().x - getPreviousPosition().x)/2;
+                    xMax = (getLastPosition().x  + apply) < xMin ? xMin : (getLastPosition().x  + apply);
                     if (xMax == getLastPosition().x && xMax != xMin) {
                         xMax=xMax - 1;
+                    } else if (xMax > getLastPosition().x && xMax != xMin) {
+                        xMax=getLastPosition().x;
                     }
+
                 } else  if (getPreviousPosition().x > getLastPosition().x) {
-                    apply = (int) Math.round((getLastPosition().x - xMin)/2d);
-                    xMin = xMin + apply;
-//                    setXMinCloser();
+                    apply = (getPreviousPosition().x - getLastPosition().x)/2;
+                    xMin = (getLastPosition().x + apply) > xMax ? xMax : (getLastPosition().x + apply);
+
                     if (xMin == getLastPosition().x && xMax != xMin) {
                         xMin=xMin + 1;
+                    } else if (xMin < getLastPosition().x && xMax != xMin) {
+                        xMin=getLastPosition().x;
                     }
 
                 }
@@ -452,17 +452,20 @@ class Player {
             boolean closeToCenterFromMin = getLastPosition().x < center && (center - getLastPosition().x) < (getLastPosition().x - xMin)/2;
             boolean closeToCenterFromMax = getLastPosition().x > center && (getLastPosition().x - center) < (xMax - getLastPosition().x)/2;
 
+            boolean closeToMin = getLastPosition().x < center && (getLastPosition().x - xMin) < (center - getLastPosition().x)/2;
+            boolean closeToMax = getLastPosition().x > center && (xMax - getLastPosition().x) < (getLastPosition().x - center)/2;
+
             int x;
             if (xMin == xMax) {
                 x = xMin;
-            } else if (closeToCenterFromMax && firstXMove) {
-                x = xMin + (int) Math.round((xMax - center)/4d);
+            } else if ((closeToCenterFromMax || closeToMax) && firstXMove) {
+                x = xMin + (int) Math.round((xMax - center)/2d);
                 firstXMove = false;
-            } else if (closeToCenterFromMin && firstXMove) {
-                x = xMax - (int) Math.round((xMax - center)/4d);
+            } else if ((closeToCenterFromMin || closeToMin) && firstXMove) {
+                x = xMax - (int) Math.round((xMax - center)/2d);
                 firstXMove = false;
             } else {
-                x = xMin + xMax - getLastPosition().x + apply/2;
+                x = xMin + xMax - getLastPosition().x;
                 System.err.println("Go to mirroring x - " + x);
             }
 
