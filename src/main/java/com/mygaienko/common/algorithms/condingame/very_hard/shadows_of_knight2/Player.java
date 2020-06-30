@@ -349,7 +349,7 @@ class Player {
                 firstYMove = false;
                 System.err.println("FirstMove:closeToCenterFromMin");
             } else {
-                y = yMin + yMax - getLastPosition().y;
+                y = yMin + yMax - getLastPosition().y + apply/2;
                 System.err.println("Go to mirroring y - " + y + ",apply - " + apply);
             }
 
@@ -467,7 +467,7 @@ class Player {
                 x = xMax - (int) Math.round((xMax - center)/2d);
                 firstXMove = false;
             } else {
-                x = xMin + xMax - getLastPosition().x;
+                x = xMin + xMax - getLastPosition().x + apply/2;
                 System.err.println("Go to mirroring x - " + x);
             }
 
