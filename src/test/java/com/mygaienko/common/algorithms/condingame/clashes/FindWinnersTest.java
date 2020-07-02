@@ -13,4 +13,11 @@ public class FindWinnersTest {
         System.out.println(winners);
     }
 
+    @Test
+    public void testFindWinnersIterative() {
+        ArrayList<Integer> winners = new ArrayList<>();
+        FindWinners.findWinnersIterative("OOOXOOXOXXXXOOX", winners);
+        System.out.println(winners);
+    }
+
 }
