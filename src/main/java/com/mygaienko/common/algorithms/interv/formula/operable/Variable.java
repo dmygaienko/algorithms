@@ -15,6 +15,9 @@ public class Variable<T> {
     Operator parent;
     Operator child;
 
+    public Variable(Operand<T> value) {
+        this.value = value;
+    }
 
     public void setParent(Operator operator) {
         if (parent != null) {

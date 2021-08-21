@@ -20,6 +20,12 @@ public class CalculatorTest {
     }
 
     @Test
+    public void testCalculator00() {
+        Formula formula = calculator.parse("a*b+c");
+        System.out.println(formula);
+    }
+
+    @Test
     public void testCalculator1() {
         Formula formula = calculator.parse("a+(b+c)");
         System.out.println(formula);

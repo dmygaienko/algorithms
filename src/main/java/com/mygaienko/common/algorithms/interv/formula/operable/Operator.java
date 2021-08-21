@@ -1,7 +1,5 @@
 package com.mygaienko.common.algorithms.interv.formula.operable;
 
-import sun.jvm.hotspot.asm.Operand;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,4 +34,5 @@ public abstract class Operator implements Operable {
         return attached;
     }
 
+    public abstract boolean isSameOrGreaterPriority(Operator operator);
 }
