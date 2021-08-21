@@ -4,8 +4,10 @@ import com.mygaienko.common.algorithms.interv.formula.operable.Operator;
 import com.mygaienko.common.algorithms.interv.formula.operable.RightParenthesis;
 import com.mygaienko.common.algorithms.interv.formula.operable.Variable;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Formula {
 
     Variable start;
