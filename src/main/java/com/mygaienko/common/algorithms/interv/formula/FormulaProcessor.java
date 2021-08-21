@@ -24,13 +24,14 @@ public class FormulaProcessor {
     }
 
     public Formula parse() {
-        return parseFormula(new Formula());
+        return parseFormula(new Formula(tasks));
     }
 
     public Formula parseFormula(Formula formula) {
         Operator prevOperator = null;
         while (i < chars.length) {
             char character = chars[i];
+            i += 1;
             Operable operable = Operable.of(character);
 
             if (operable instanceof Operand) {
@@ -38,19 +39,28 @@ public class FormulaProcessor {
             } else {
                 Operator operator = (Operator) operable;
 
-                if (prevOperator == null || prevOperator.isSameOrGreaterPriority(operator)) {
-                    formula.addOperator(operator);
-                } else if (formula.isOpenParenthesis() && operator instanceof LeftParenthesis) {
+                if (operator instanceof RightParenthesis) {
+                    if (!formula.isOpenParenthesis()) {
+                        i -= 1;
+                    }
                     return formula;
+                } else if (operator instanceof LeftParenthesis) {
+                    Variable<String> replacing = generateNextVariable();
+                    formula.setNext(replacing);
+                    Formula newFormula = new Formula(operator);
+                    replacing.setParentOperator(prevOperator);
+                    tasks.put(replacing.getValue().getValue(), parseFormula(newFormula));
+                } else if (prevOperator == null || prevOperator.isSameOrGreaterPriority(operator)) {
+                    formula.addOperator(operator);
+                    prevOperator = operator;
                 } else {
                     // less priority operator
                     Variable<String> replacing = generateNextVariable();
                     Variable replaced = formula.replaceNext(replacing); //
                     Formula newFormula = new Formula(replaced, operator);
                     tasks.put(replacing.getValue().getValue(), parseFormula(newFormula)); //
+                    prevOperator = operator;
                 }
-
-                prevOperator = operator;
             }
         }
         return formula;

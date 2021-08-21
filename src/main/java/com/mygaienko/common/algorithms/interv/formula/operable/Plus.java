@@ -1,5 +1,8 @@
 package com.mygaienko.common.algorithms.interv.formula.operable;
 
+import lombok.Data;
+
+@Data
 public class Plus extends Operator {
 
     @Override
@@ -7,6 +10,10 @@ public class Plus extends Operator {
         return operator instanceof Minus || operator instanceof Plus;
     }
 
+    @Override
+    public String toString() {
+        return " + ";
+    }
 }
 
 

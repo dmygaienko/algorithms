@@ -20,18 +20,19 @@ public class Variable<T> {
     }
 
     public void setParentOperator(Operator operator) {
-        if (parentOperator != null) {
-            parentOperator.attach(operator);
-        } else {
-            this.parentOperator = operator;
+        this.parentOperator = operator;
+        if (operator != null) {
+            operator.setSecondVariable(this);
         }
     }
 
     public void setChildOperator(Operator operator) {
-        if (childOperator != null) {
-            childOperator.attach(operator);
-        } else {
-            this.childOperator = operator;
-        }
+        this.childOperator = operator;
+        operator.setFirstVariable(this);
+    }
+
+    @Override
+    public String toString() {
+        return value.getValue().toString();
     }
 }

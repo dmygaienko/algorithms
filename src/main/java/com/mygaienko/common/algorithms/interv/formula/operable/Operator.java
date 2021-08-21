@@ -1,37 +1,24 @@
 package com.mygaienko.common.algorithms.interv.formula.operable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Operator implements Operable {
 
-    Operand firstOperand;
-    Operand secondOperand;
+    Variable firstVariable;
+    Variable secondVariable;
 
-    List<Operator> attached = new ArrayList<>();
-
-    public void attach(Operator operator) {
-        attached.add(operator);
+    public Variable getFirstVariable() {
+        return firstVariable;
     }
 
-    public Operand getFirstOperand() {
-        return firstOperand;
+    public void setFirstVariable(Variable firstVariable) {
+        this.firstVariable = firstVariable;
     }
 
-    public void setFirstOperand(Operand firstOperand) {
-        this.firstOperand = firstOperand;
+    public Variable getSecondVariable() {
+        return secondVariable;
     }
 
-    public Operand getSecondOperand() {
-        return secondOperand;
-    }
-
-    public void setSecondOperand(Operand secondOperand) {
-        this.secondOperand = secondOperand;
-    }
-
-    public List<Operator> getAttached() {
-        return attached;
+    public void setSecondVariable(Variable secondVariable) {
+        this.secondVariable = secondVariable;
     }
 
     public abstract boolean isSameOrGreaterPriority(Operator operator);
