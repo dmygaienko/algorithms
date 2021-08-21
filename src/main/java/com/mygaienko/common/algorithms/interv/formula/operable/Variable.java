@@ -12,26 +12,26 @@ public class Variable<T> {
 
     Operand<T> value;
 
-    Operator parent;
-    Operator child;
+    Operator parentOperator;
+    Operator childOperator;
 
     public Variable(Operand<T> value) {
         this.value = value;
     }
 
-    public void setParent(Operator operator) {
-        if (parent != null) {
-            parent.attach(operator);
+    public void setParentOperator(Operator operator) {
+        if (parentOperator != null) {
+            parentOperator.attach(operator);
         } else {
-            this.parent = operator;
+            this.parentOperator = operator;
         }
     }
 
-    public void setChild(Operator operator) {
-        if (child != null) {
-            child.attach(operator);
+    public void setChildOperator(Operator operator) {
+        if (childOperator != null) {
+            childOperator.attach(operator);
         } else {
-            this.child = operator;
+            this.childOperator = operator;
         }
     }
 }

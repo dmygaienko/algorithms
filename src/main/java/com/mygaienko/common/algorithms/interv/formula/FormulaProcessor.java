@@ -24,8 +24,10 @@ public class FormulaProcessor {
     }
 
     public Formula parse() {
-        Formula formula = new Formula();
+        return parseFormula(new Formula());
+    }
 
+    public Formula parseFormula(Formula formula) {
         Operator prevOperator = null;
         while (i < chars.length) {
             char character = chars[i];
@@ -36,21 +38,22 @@ public class FormulaProcessor {
             } else {
                 Operator operator = (Operator) operable;
 
-                if (prevOperator == null || operator.isSameOrGreaterPriority(prevOperator)) {
+                if (prevOperator == null || prevOperator.isSameOrGreaterPriority(operator)) {
                     formula.addOperator(operator);
+                } else if (formula.isOpenParenthesis() && operator instanceof LeftParenthesis) {
+                    return formula;
                 } else {
+                    // less priority operator
                     Variable<String> replacing = generateNextVariable();
-                    Variable replaced = formula.replaceNext(replacing);
-                    tasks.put(replacing.getValue().getValue(), new Formula());
+                    Variable replaced = formula.replaceNext(replacing); //
+                    Formula newFormula = new Formula(replaced, operator);
+                    tasks.put(replacing.getValue().getValue(), parseFormula(newFormula)); //
                 }
 
                 prevOperator = operator;
             }
-
-
         }
-
-        return null;
+        return formula;
     }
 
     private Variable<String> generateNextVariable() {

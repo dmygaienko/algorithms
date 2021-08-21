@@ -5,8 +5,8 @@ import java.util.List;
 
 public abstract class Operator implements Operable {
 
-    Operand first;
-    Operand second;
+    Operand firstOperand;
+    Operand secondOperand;
 
     List<Operator> attached = new ArrayList<>();
 
@@ -14,20 +14,20 @@ public abstract class Operator implements Operable {
         attached.add(operator);
     }
 
-    public Operand getFirst() {
-        return first;
+    public Operand getFirstOperand() {
+        return firstOperand;
     }
 
-    public void setFirst(Operand first) {
-        this.first = first;
+    public void setFirstOperand(Operand firstOperand) {
+        this.firstOperand = firstOperand;
     }
 
-    public Operand getSecond() {
-        return second;
+    public Operand getSecondOperand() {
+        return secondOperand;
     }
 
-    public void setSecond(Operand second) {
-        this.second = second;
+    public void setSecondOperand(Operand secondOperand) {
+        this.secondOperand = secondOperand;
     }
 
     public List<Operator> getAttached() {
