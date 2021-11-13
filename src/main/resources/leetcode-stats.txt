@@ -1,0 +1,12 @@
+# solved:
+1. two-sum
+
+
+# solved with hints:
+3. longest-substring-without-repeating-characters
+
+
+# solved after reviewing solutions:
+1044. Longest Duplicate Substring
+214. Shortest Palindrome
+5. Longest Palindromic Substring
