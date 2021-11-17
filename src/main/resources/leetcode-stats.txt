@@ -1,10 +1,11 @@
 # solved:
 1. two-sum
-394. decode-string
+394. decode-string (TODO redo with stack)
 
 
 # solved with hints:
 3. longest-substring-without-repeating-characters
+1048. longest-string-chain
 
 
 # solved after reviewing solutions:
