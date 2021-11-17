@@ -1,5 +1,6 @@
 # solved:
 1. two-sum
+394. decode-string
 
 
 # solved with hints:
@@ -10,3 +11,6 @@
 1044. Longest Duplicate Substring
 214. Shortest Palindrome
 5. Longest Palindromic Substring
+
+
+# next
