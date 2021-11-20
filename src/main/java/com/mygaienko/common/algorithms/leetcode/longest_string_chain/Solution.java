@@ -15,7 +15,7 @@ class Solution {
             maxPreds.putIfAbsent(next, 1);
             Integer nextChain = maxPreds.get(next);
 
-            List<String> descs = new ArrayList<>();
+            List<String> preds = new ArrayList<>();
             for (int j = i - 1; j >= 0; j--) {
                 String pred = words[j];
                 if (pred.length() < next.length() - 1) {
@@ -23,13 +23,13 @@ class Solution {
                 }
 
                 if (isPredecessor(pred, next)) {
-                    descs.add(pred);
+                    preds.add(pred);
                 }
             }
 
             int predsChain = nextChain + 1;
-            for (String desc : descs) {
-                maxPreds.compute(desc, (k, v) -> v == null ? predsChain : Math.max(v, predsChain));
+            for (String pred : preds) {
+                maxPreds.compute(pred, (k, v) -> v == null ? predsChain : Math.max(v, predsChain));
 
             }
         }

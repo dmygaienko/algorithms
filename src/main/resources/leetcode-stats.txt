@@ -6,6 +6,7 @@
 # solved with hints:
 3. longest-substring-without-repeating-characters
 1048. longest-string-chain
+792. Number of Matching Subsequences - https://leetcode.com/problems/number-of-matching-subsequences/
 
 
 # solved after reviewing solutions:
@@ -15,3 +16,6 @@
 
 
 # next
+833. Find And Replace in String - https://leetcode.com/problems/find-and-replace-in-string/
+68. Text Justification - https://leetcode.com/problems/text-justification/
+1525. Number of Good Ways to Split a String - https://leetcode.com/problems/number-of-good-ways-to-split-a-string/
