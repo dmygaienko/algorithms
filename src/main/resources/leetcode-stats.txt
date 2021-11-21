@@ -1,6 +1,8 @@
 # solved:
 1. two-sum
 394. decode-string (TODO redo with stack)
+833. Find And Replace in String - https://leetcode.com/problems/find-and-replace-in-string/
+68. Text Justification - https://leetcode.com/problems/text-justification/
 
 
 # solved with hints:
@@ -16,6 +18,4 @@
 
 
 # next
-833. Find And Replace in String - https://leetcode.com/problems/find-and-replace-in-string/
-68. Text Justification - https://leetcode.com/problems/text-justification/
 1525. Number of Good Ways to Split a String - https://leetcode.com/problems/number-of-good-ways-to-split-a-string/

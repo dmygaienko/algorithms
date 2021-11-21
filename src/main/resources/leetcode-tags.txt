@@ -3,3 +3,4 @@ dynamic programming (i.e. save intermediate results - in two dimensional array o
 kmp-search(+ longest-prefix-suffix array) !! repeat !!
 rolling hash
 binary search
+sorting
