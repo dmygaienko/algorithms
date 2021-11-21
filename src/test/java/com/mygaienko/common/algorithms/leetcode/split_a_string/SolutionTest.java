@@ -10,7 +10,17 @@ public class SolutionTest {
 
     @Test
     public void testNumSplits() {
-        assertEquals(0, solution.numSplits(""));
+        assertEquals(2, solution.numSplits("aacaba"));
+    }
+
+    @Test
+    public void testNumSplits2() {
+        assertEquals(4, solution.numSplits("aaaaa"));
+    }
+
+    @Test
+    public void testNumSplits3() {
+        assertEquals(2, solution.numSplits("acbadbaada"));
     }
 
 }

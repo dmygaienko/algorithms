@@ -1,0 +1,18 @@
+#Top Google Questions
+https://leetcode.com/problem-list/7p55wqm/?sorting=W3sic29ydE9yZGVyIjoiREVTQ0VORElORyIsIm9yZGVyQnkiOiJGUkVRVUVOQ1kifV0%3D&page=1
+
+
+#LeetCode Curated Algo 170
+https://leetcode.com/problem-list/552y65ke/
+
+
+#Top Facebook Questions
+https://leetcode.com/problem-list/7p59281/
+
+
+#Top Microsoft Questions
+https://leetcode.com/problem-list/55vr69d7/
+
+
+#Top Amazon Questions
+https://leetcode.com/problem-list/7p5x763/

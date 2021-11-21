@@ -3,6 +3,7 @@
 394. decode-string (TODO redo with stack)
 833. Find And Replace in String - https://leetcode.com/problems/find-and-replace-in-string/
 68. Text Justification - https://leetcode.com/problems/text-justification/
+1525. Number of Good Ways to Split a String - https://leetcode.com/problems/number-of-good-ways-to-split-a-string/
 
 
 # solved with hints:
@@ -18,4 +19,7 @@
 
 
 # next
-1525. Number of Good Ways to Split a String - https://leetcode.com/problems/number-of-good-ways-to-split-a-string/
+745. Prefix and Suffix Search https://leetcode.com/problems/prefix-and-suffix-search/
+727. Minimum Window Subsequence https://leetcode.com/problems/minimum-window-subsequence/
+940. Distinct Subsequences II https://leetcode.com/problems/distinct-subsequences-ii/
+871. Minimum Number of Refueling Stops https://leetcode.com/problems/minimum-number-of-refueling-stops/
