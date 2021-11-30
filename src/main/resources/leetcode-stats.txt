@@ -4,7 +4,7 @@
 833. Find And Replace in String - https://leetcode.com/problems/find-and-replace-in-string/
 68. Text Justification - https://leetcode.com/problems/text-justification/
 1525. Number of Good Ways to Split a String - https://leetcode.com/problems/number-of-good-ways-to-split-a-string/
-
+299. Bulls and Cows https://leetcode.com/problems/bulls-and-cows/
 
 # solved with hints:
 3. longest-substring-without-repeating-characters
@@ -22,5 +22,13 @@
 
 
 # next
+269. Alien Dictionary https://leetcode.com/problems/alien-dictionary/
 940. Distinct Subsequences II https://leetcode.com/problems/distinct-subsequences-ii/
 871. Minimum Number of Refueling Stops https://leetcode.com/problems/minimum-number-of-refueling-stops/
+
+
+# Google's strings problems
+https://leetcode.com/problem-list/7p55wqm/?topicSlugs=string&page=1&sorting=W3sic29ydE9yZGVyIjoiREVTQ0VORElORyIsIm9yZGVyQnkiOiJGUkVRVUVOQ1kifV0%3D
+
+# Algo curated strings problems
+https://leetcode.com/problem-list/552y65ke/?topicSlugs=string&page=1&sorting=W3sic29ydE9yZGVyIjoiREVTQ0VORElORyIsIm9yZGVyQnkiOiJGUkVRVUVOQ1kifV0%3D
