@@ -14,6 +14,7 @@
 792. Number of Matching Subsequences - https://leetcode.com/problems/number-of-matching-subsequences/
 745. Prefix and Suffix Search https://leetcode.com/problems/prefix-and-suffix-search/ ( TODO redo with Sliding Window - HashMap And TreeMap
      as https://leetcode.com/problems/minimum-window-subsequence/discuss/1531889/Java-Sliding-Window-Approach-HashMap-and-TreeSet )
+269. Alien Dictionary https://leetcode.com/problems/alien-dictionary/
 
 
 # solved after reviewing solutions:
@@ -21,10 +22,10 @@
 214. Shortest Palindrome
 5. Longest Palindromic Substring
 727. Minimum Window Subsequence
+210. Course Schedule II https://leetcode.com/problems/course-schedule-ii/ (DFS)
 
 
 # next
-269. Alien Dictionary https://leetcode.com/problems/alien-dictionary/
 940. Distinct Subsequences II https://leetcode.com/problems/distinct-subsequences-ii/
 871. Minimum Number of Refueling Stops https://leetcode.com/problems/minimum-number-of-refueling-stops/
 
