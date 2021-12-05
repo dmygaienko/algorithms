@@ -4,3 +4,6 @@ kmp-search(+ longest-prefix-suffix array) !! repeat !!
 rolling hash
 binary search
 sorting
+union find
+dfs
+bfs
