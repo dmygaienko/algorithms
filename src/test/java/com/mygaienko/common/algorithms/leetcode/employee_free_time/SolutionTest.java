@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 public class SolutionTest {
 
-    Solution solution = new Solution();
+    SolutionV2 solution = new SolutionV2();
 
     @Test
     public void test1() {
@@ -49,7 +49,7 @@ public class SolutionTest {
                 List.of(new Interval(0, 1), new Interval(7, 13), new Interval(23, 44), new Interval(48, 62), new Interval(86, 100))
         ));
 
-        List<Interval> expected = List.of(new Interval(5, 6), new Interval(7, 9));
+        List<Interval> expected = List.of(new Interval(1, 6), new Interval(69, 70), new Interval(71, 72));
         assertEquals(expected, actual);
     }
 }

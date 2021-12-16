@@ -3,6 +3,7 @@ package com.mygaienko.common.algorithms.leetcode.employee_free_time;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 /**
@@ -99,6 +100,7 @@ class Solution {
             } else if (i + 2 == commonMinutes.size()) {
                 currentInterval.end = next + 1;
                 intervals.add(currentInterval);
+                break;
             }
         }
 
@@ -115,5 +117,27 @@ class Interval {
     public Interval(int _start, int _end) {
         start = _start;
         end = _end;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Interval interval = (Interval) o;
+        return start == interval.start &&
+                end == interval.end;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end);
+    }
+
+    @Override
+    public String toString() {
+        return "Interval{" +
+                "start=" + start +
+                ", end=" + end +
+                '}';
     }
 };
