@@ -7,6 +7,7 @@
 299. Bulls and Cows https://leetcode.com/problems/bulls-and-cows/
 388. Longest Absolute File Path https://leetcode.com/problems/longest-absolute-file-path/
 384. Shuffle an Array https://leetcode.com/problems/shuffle-an-array/
+339. Nested List Weight Sum https://leetcode.com/problems/nested-list-weight-sum/
 
 
 # solved with hints:
@@ -30,6 +31,7 @@
 
 
 # next
+329. Longest Increasing Path in a Matrix https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
 940. Distinct Subsequences II https://leetcode.com/problems/distinct-subsequences-ii/
 871. Minimum Number of Refueling Stops https://leetcode.com/problems/minimum-number-of-refueling-stops/
 
