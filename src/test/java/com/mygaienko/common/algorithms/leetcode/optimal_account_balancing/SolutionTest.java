@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SolutionTest {
 
-    SolutionV2 solution = new SolutionV2();
+    Solution solution = new Solution();
 
     @Test
     public void test0() {
