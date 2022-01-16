@@ -32,4 +32,9 @@ public class SolutionTest {
                 {7,8,9,10,11,12,13}
                 }, 2));
     }
+
+    @Test
+    public void test2() {
+        assertEquals(1, solution.kthSmallest(new int[][]{{1,2},{3,3}}, 1));
+    }
 }
