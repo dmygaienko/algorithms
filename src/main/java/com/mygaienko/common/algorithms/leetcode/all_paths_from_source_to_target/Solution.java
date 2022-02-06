@@ -15,8 +15,12 @@ class Solution {
     private List<List<Integer>> findPathsToTarget(int[][] graph, int current, int end) {
         List<List<Integer>> paths = new ArrayList<>();
         for (int neigh : graph[current]) {
+            if (neigh == end) {
+                paths.add(List.of(current, end));
+            }
+
             List<ArrayDeque<Integer>> stacks = findPathToTarget(graph, neigh, end);
-            if (!stacks.isEmpty()) {
+            if (stacks != null && !stacks.isEmpty()) {
                 for (ArrayDeque<Integer> stack : stacks) {
                     stack.push(current);
                     paths.add(new ArrayList<>(stack));
@@ -33,8 +37,12 @@ class Solution {
 
             if (neigh == end) {
                 ArrayDeque<Integer> stack = new ArrayDeque<>();
-                stack.push(neigh);
-                return List.of(stack);
+                stack.push(end);
+                stack.push(current);
+                if (notEmptyPaths == null) {
+                    notEmptyPaths = new ArrayList<>();
+                }
+                notEmptyPaths.add(stack);
             }
 
             List<ArrayDeque<Integer>> paths = findPathToTarget(graph, neigh, end);
