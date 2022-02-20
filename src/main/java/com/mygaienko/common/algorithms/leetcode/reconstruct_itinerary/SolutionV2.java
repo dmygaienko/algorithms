@@ -26,8 +26,7 @@ class SolutionV2 {
         stack.push("JFK");
 
         while (!stack.empty()) {
-            while (targets.containsKey(stack.peek())
-                    && !targets.get(stack.peek()).isEmpty()) {
+            while (targets.containsKey(stack.peek()) && !targets.get(stack.peek()).isEmpty()) {
                 PriorityQueue<String> adj = targets.get(stack.peek());
                 stack.push(adj.poll());
             }
