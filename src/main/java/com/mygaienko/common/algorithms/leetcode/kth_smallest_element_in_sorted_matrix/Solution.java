@@ -3,6 +3,9 @@ package com.mygaienko.common.algorithms.leetcode.kth_smallest_element_in_sorted_
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+/**
+ * maxHeap
+ */
 class Solution {
 
     public int kthSmallest(int[][] matrix, int k) {
