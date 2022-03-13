@@ -36,4 +36,10 @@ public class SolutionTest {
         assertEquals(1, length);
     }
 
+    @Test
+    public void test_abba() {
+        int length = new Solution().lengthOfLongestSubstring("abba");
+        assertEquals(2, length);
+    }
+
 }

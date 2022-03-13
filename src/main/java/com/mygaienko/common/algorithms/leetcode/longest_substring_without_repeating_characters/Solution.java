@@ -5,35 +5,27 @@ import java.util.*;
 public class Solution {
 
     public int lengthOfLongestSubstring(String s) {
+        char[] chars = s.toCharArray();
+        int maxLength = 0;
 
-        int longest = 0;
+        Map<Character, LinkedList<Integer>> charOccurences = new HashMap<>();
+        int currentLength = 0;
+        for (int i = 0; i < chars.length; i++) {
+            char nextChar = chars[i];
 
-        Map<Character, LinkedList<Integer>> chars = new HashMap<>();
+            LinkedList<Integer> occurences = charOccurences.computeIfAbsent(nextChar, v -> new LinkedList<>());
+            occurences.add(i);
 
-        int currentLongest = 0;
-        for (int i = 0; i < s.length(); i++) {
-            int finalI = i;
-            char ch = s.charAt(i);
-            LinkedList<Integer> duplicateIndexes = chars.compute(ch, (k, v) -> v == null ? newWithValue(finalI) : addValue(v, finalI));
-
-            if (duplicateIndexes.size() > 1) {
-                longest = Math.max(currentLongest, longest);
-                currentLongest = Math.min(currentLongest + 1, i - duplicateIndexes.removeFirst());
+            if (occurences.size() > 1) {
+                maxLength = Math.max(maxLength, currentLength);
+                int firstOccurence = occurences.removeFirst();
+                currentLength = Math.min(currentLength + 1, i - firstOccurence);
             } else {
-                currentLongest++;
+                currentLength++;
             }
         }
 
-        return Math.max(currentLongest, longest);
-    }
-
-    private LinkedList<Integer> newWithValue(Integer v) {
-        return addValue(new LinkedList<>(), v);
-    }
-
-    private LinkedList<Integer> addValue(LinkedList<Integer> list, Integer v) {
-        list.add(v);
-        return list;
+        return Math.max(currentLength, maxLength);
     }
 
 }
