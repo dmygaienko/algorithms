@@ -13,3 +13,7 @@ bfs
 Kruskal Algorithm
 Prim's Algorithm
 eulerian path
+
+heap
+monotonic stack
+monotonic queue
