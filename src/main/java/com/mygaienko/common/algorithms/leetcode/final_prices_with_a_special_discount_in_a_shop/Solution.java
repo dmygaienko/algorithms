@@ -4,25 +4,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+/**
+ * increased monotonic stack
+ */
 public class Solution {
 
     public int[] finalPrices(int[] prices) {
         int[] result = new int[prices.length];
 
-        Stack<Integer> stack = new Stack();
+        Stack<int[]> stack = new Stack<>();
         Map<Integer, Integer> map = new HashMap<>();
 
-        for (int price : prices) {
-            if (!stack.isEmpty() && stack.peek() > price) {
-                int last = stack.peek();
-                map.put(last, last - price);
+        for (int i = 0; i < prices.length; i++) {
+            int price = prices[i];
+
+            while (!stack.isEmpty() && stack.peek()[1] >= price) {
+                int[] arr = stack.pop();
+                int ind = arr[0];
+                int last = arr[1];
+                map.put(ind, last - price);
             }
-            stack.push(price);
+            stack.push(new int[]{i, price});
         }
 
         for (int i = 0; i < prices.length; i++) {
             int price = prices[i];
-            result[i] = map.getOrDefault(price, price);
+            result[i] = map.getOrDefault(i, price);
         }
 
         return result;

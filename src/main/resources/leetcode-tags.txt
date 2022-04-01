@@ -15,5 +15,24 @@ Prim's Algorithm
 eulerian path
 
 heap
-monotonic stack
+    max-heap [5,4,3,2,1] for top k lowest elements in a loop compare with peek element if i-th is lower then replace
+    min-heap [1,2,3,4,5] for top k largest elements in a loop  compare with peek element if i-th is larger then replace
+
+monotonic stack - keep stack in order, elements that not confirmed to the order are pop out
+    decreased (from bottom to top) monotonic stack
+        goal - element that popped of the stack and next element -> allows to find next greater value to the right
+             - element underneath is the next greater element to the left
+
+        Before: [5,4,2,1]
+        To push 3, we need to pop all smaller (or equal) elements first
+        After: [5,4,3]
+
+    increased monotonic stack
+        goal - element that popped of the stack and next element -> allows to find next smaller value to the right
+             - element underneath is the next greater element to the left
+
+        Before: [1,2,4,5]
+        To push 3, we need to pop all greater (or equal) elements first
+        After: [1,2,3]
+
 monotonic queue

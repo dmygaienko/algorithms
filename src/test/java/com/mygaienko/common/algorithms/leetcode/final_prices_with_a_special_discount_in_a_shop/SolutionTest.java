@@ -11,6 +11,15 @@ public class SolutionTest {
     @Test
     public void test() {
         int[] actual = solution.finalPrices(new int[]{8, 4, 6, 2, 3});
-        assertThat(actual).isEqualTo(new int[] {4,2,4,2,4});
+        assertThat(actual).isEqualTo(new int[] {4,2,4,2,3});
+    }
+
+    /**
+     * [10,1,1,6]
+     */
+    @Test
+    public void test0() {
+        int[] actual = solution.finalPrices(new int[]{10,1,1,6});
+        assertThat(actual).isEqualTo(new int[] {9,0,1,6});
     }
 }
