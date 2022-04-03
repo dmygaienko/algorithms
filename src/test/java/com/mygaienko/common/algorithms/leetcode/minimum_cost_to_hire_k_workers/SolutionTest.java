@@ -38,4 +38,10 @@ public class SolutionTest {
         assertThat(actual).isEqualTo(14d, Offset.offset(0.001d));
     }
 
+    @Test
+    public void test3() {
+        double actual = solution.mincostToHireWorkers(new int[]{2, 1, 5}, new int[]{17, 6, 4}, 2);
+        assertThat(actual).isEqualTo(25.5d, Offset.offset(0.001d));
+    }
+
 }

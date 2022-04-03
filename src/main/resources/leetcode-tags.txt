@@ -36,3 +36,7 @@ monotonic stack - keep stack in order, elements that not confirmed to the order 
         After: [1,2,3]
 
 monotonic queue
+
+two-pointers
+    left and right pointers which meets each other
+    pointers with interval of N
