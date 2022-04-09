@@ -40,3 +40,10 @@ monotonic queue
 two-pointers
     left and right pointers which meets each other
     pointers with interval of N
+
+recursion
+    divide & conquer
+        merge sort
+        quick sort
+    backtracking
+        pruning
