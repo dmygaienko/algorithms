@@ -2,26 +2,26 @@ package com.mygaienko.common.algorithms.leetcode.n_ary_tree_postorder_traversal;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class Solution {
+class Solution {
 
     public List<Integer> postorder(Node root) {
-        List<Integer> result = new ArrayList<>();
+        List<Integer> result = new ArrayList();
         if (root == null) return result;
 
         ArrayDeque<Node> stack = new ArrayDeque<>();
         stack.push(root);
 
-        BitSet bitSet = new BitSet();
+        Set<Node> seen = new HashSet<>(); // could be bitset if input doesn't have duplicates
 
         while (!stack.isEmpty()) {
 
             Node peek = stack.peek();
-            int val = peek.val;
 
-            if (peek.children == null || peek.children.size() == 0 || bitSet.get(val)) {
+            if (peek.children == null || peek.children.size() == 0 || seen.contains(peek)) {
                 Node pop = stack.pop();
                 result.add(pop.val);
             } else {
@@ -31,7 +31,7 @@ public class Solution {
                 }
             }
 
-            bitSet.set(val);
+            seen.add(peek);
         }
 
         return result;
