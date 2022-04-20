@@ -8,8 +8,12 @@ import java.util.PriorityQueue;
 import java.util.Stack;
 
 /**
+ * eulerian circuit
+ *
  * https://leetcode.com/problems/reconstruct-itinerary/discuss/78768/Short-Ruby-Python-Java-C%2B%2B
+ * https://www.youtube.com/watch?v=8MpoO2zA2l4&t=4s&ab_channel=WilliamFiset
  */
+
 class SolutionV2 {
 
     private static final String START = "JFK";
@@ -20,7 +24,7 @@ class SolutionV2 {
             targets.computeIfAbsent(ticket.get(0),
                     k -> new PriorityQueue<>()).add(ticket.get(1));
 
-        List<String> route = new LinkedList();
+        LinkedList<String> route = new LinkedList();
 
         Stack<String> stack = new Stack<>();
         stack.push("JFK");
@@ -31,7 +35,7 @@ class SolutionV2 {
                 stack.push(adj.poll());
             }
 
-            route.add(0, stack.pop());
+            route.addFirst(stack.pop());
         }
         return route;
     }

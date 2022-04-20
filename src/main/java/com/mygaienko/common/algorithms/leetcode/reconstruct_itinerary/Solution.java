@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+/**
+ * eulerian circuit
+ */
 class Solution {
 
     private static final String START = "JFK";
