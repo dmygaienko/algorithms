@@ -2,9 +2,10 @@ package com.mygaienko.common.algorithms.leetcode.robot_room_cleaner;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-
-import static com.mygaienko.common.algorithms.leetcode.robot_room_cleaner.Direction.directions;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 class Solution {
 
@@ -15,22 +16,24 @@ class Solution {
 }
 
 class SmartRobot {
-    private static final int UNKNOWN = -1;
-    private static final int CLEANED = 1;
+    private static final int UNKNOWN = 1;
+    private static final int CLEANED = 2;
     private static final int BLOCKED = 0;
 
     private final int[][] matrix = new int[200][400];
 
     private final Robot robot;
 
-    int minX = 0; // out wall positions, should be narrowed
-    int maxX = 199;
+    static final int minX = 0; // out wall positions, should be narrowed
+    static final int maxX = 199;
 
-    int intY = 0; // out wall positions, should be narrowed
-    int maxY = 399;
+    static final int minY = 0; // out wall positions, should be narrowed
+    static final int maxY = 399;
+
+    private int cleans = 0;
 
     Position currentPosition = Position.of(100, 200);
-    Direction currentDirection = Direction.UP;
+    Direction currentDirection = Direction.DOWN;
 
     public SmartRobot(Robot robot) {
         this.robot = robot;
@@ -40,102 +43,132 @@ class SmartRobot {
     }
 
     public void cleanRoom() {
-        recognizeWalls();
         doClean();
     }
 
     private void doClean() {
         ArrayDeque<Position> stack = new ArrayDeque<>();
         stack.add(currentPosition);
+        tryClean(currentPosition);
 
-        while (!stack.isEmpty() || addUnknowns(stack)) {
+        while (!stack.isEmpty()) {
             Position next = stack.pop();
-            if (move(next)) {
-                for (Direction dir : directions) {
-                    if (dir != currentDirection) {
-                        pushIfUnknown(stack, dir);
+            if (isNearest(next)) {
+                if (next.equals(currentPosition) || move(next)) {
+                    Direction direction = currentDirection;
+                    for (int i = 0; i < 4; i++) {
+                        pushIfUnknown(stack, direction);
+                        direction = direction.next();
                     }
                 }
-                pushIfUnknown(stack, currentDirection);
-            }
-        }
-    }
-
-    private void pushIfUnknown(ArrayDeque<Position> stack, Direction currentDirection) {
-        Position next = currentPosition.next(currentDirection);
-        if (isPosition(next, UNKNOWN)) {
-            stack.push(next);
-        }
-    }
-
-    private boolean addUnknowns(ArrayDeque<Position> stack) {
-        return false;
-    }
-
-    private void recognizeWalls() {
-        robot.turnLeft();
-        boolean moved = true;
-        boolean wallsRecognized = false;
-        while (!wallsRecognized) {
-            if (moved) {
-                if (isPosition(currentPosition, CLEANED)) {
-                    wallsRecognized = true;
-                }
-                robot.clean();
-                moved = moveForward();
-                robot.turnLeft();
             } else {
-                markOppositeAsWall();
-//                if (allWallsRecognized()) {
-//                    wallsRecognized = true;
-//                }
-                robot.turnRight();
-                moved = true;
+                addShortestPathToStack(next, stack);
             }
         }
     }
 
-    private void markOppositeAsWall() {
-        Position pos = currentPosition.next(currentDirection);
-        matrix[pos.x][pos.y] = BLOCKED;
+    private void addShortestPathToStack(Position target, ArrayDeque<Position> stack) {
+        Map<Position, Integer> values = new HashMap<>();
+        Map<Position, Position> minPathPrevPos = new HashMap<>();
+
+        PriorityQueue<PositionPath> queue = new PriorityQueue<>();
+        queue.add(new PositionPath(currentPosition, 0));
+
+        while (!queue.isEmpty()) {
+            PositionPath next = queue.poll();
+            Position nextPos = next.position;
+
+            Integer targetPathValue = values.get(target);
+            int adjValue = next.val + 1;
+            for (Direction direction : Direction.directions) {
+                Position adjPos = nextPos.next(direction);
+
+                if (adjPos == null) {
+//                    System.out.println("skipping adjPos null");
+                    continue;
+                } else if (isPosition(adjPos, BLOCKED))  {
+//                    System.out.println("skipping adjPos as BLOCKED: " + adjPos);
+                    continue;
+                } else if (isPosition(adjPos, UNKNOWN) && !adjPos.equals(target)) {
+//                    System.out.println("skipping adjPos as UNKNOWN but not target: " + adjPos);
+                    continue;
+                }
+
+                Integer value = values.get(adjPos);
+                if (value == null || value >= adjValue && (targetPathValue == null || targetPathValue >= adjValue)) {
+                    values.put(adjPos, adjValue);
+                    if (adjPos != nextPos) {
+                        minPathPrevPos.put(adjPos, nextPos);
+                    }
+                    queue.offer(new PositionPath(adjPos, adjValue));
+                }
+            }
+        }
+
+//        System.out.println("Finishing: addShortestPathToStack" + target + " from currentPosition: " + currentPosition);
+//        System.out.println("Finishing: values.get(target)" + values.get(target));
+        if (values.get(target) != null) {
+            addToStack(target, minPathPrevPos, stack);
+        }
     }
 
-//    private boolean allWallsRecognized() {
-//        Position start = currentPosition.next(direction);
-//        return findNextWall(start).equals(start);
-//    }
+    private void addToStack(Position target, Map<Position, Position> minPathPrevPos, ArrayDeque<Position> stack) {
+//        System.out.println("AddToStack: " + target);
+        Position prevPos = target;
+        while (prevPos != currentPosition) {
+            stack.push(prevPos);
+            prevPos = minPathPrevPos.get(prevPos);
+        }
+//        System.out.println("Stack: " + stack);
+    }
 
-//    private Position findNextWall(Position start) {
-//        for (Direction direction : directions) {
-//            Position next = start.next(direction);
-//            if (isPositing(next, BRICK)) {
-//                return findNextWall(next);
-//            }
-//        }
-//        return null;
-//    }
+    private boolean isNearest(Position nextPosition) {
+        if (nextPosition.equals(currentPosition)) return true;
 
-    private boolean moveForward() {
-        Position next = currentPosition.next(currentDirection);
-        return move(next);
+        Direction direction = currentDirection;
+
+        boolean result = false;
+        int i = 0;
+        for (; i < 4; i++) {
+            Position next = currentPosition.next(direction);
+            if (next != null && next.equals(nextPosition)) {
+                currentDirection = direction;
+                result = true;
+                break;
+            }
+            direction = direction.next();
+            currentDirection = direction;
+            robot.turnRight();
+        }
+
+        return result;
+    }
+
+    private void pushIfUnknown(ArrayDeque<Position> stack, Direction direction) {
+        Position next = currentPosition.next(direction);
+        if (next != null && isPosition(next, UNKNOWN)) {
+            stack.push(next);
+//            System.out.println("pushIfUnknown: " + next);
+        }
     }
 
     private boolean move(Position pos) {
-        //move // probably Dijkstra
-        //find adjacencies not unknown and add to queue
-        //move by circle
-        //or move by vertices
-        tryClean(pos);
         boolean move = robot.move();
         if (move) {
+//            System.out.println("moved: " + pos);
             currentPosition = pos;
+            tryClean(pos);
+        } else {
+            setPosition(pos, BLOCKED);
+//            System.out.println("setPosition(pos, BLOCKED): " + pos);
         }
         return move;
     }
 
     private void tryClean(Position pos) {
-        if (!isPosition(pos, CLEANED)) {
+        if (isPosition(pos, UNKNOWN)/*|| !isPosition(pos, BLOCKED)*/) {
             robot.clean();
+            System.out.println("robot.clean():" + (++cleans) + " pos:" + pos);
             setPosition(pos, CLEANED);
         }
     }
@@ -151,9 +184,29 @@ class SmartRobot {
 }
 
 enum Direction {
-    UP, RIGHT, DOWN, LEFT;
+
+    UP {
+        Direction next() {
+            return RIGHT;
+        }
+    }, RIGHT {
+        Direction next() {
+            return DOWN;
+        }
+    }, DOWN {
+        Direction next() {
+            return LEFT;
+        }
+    }, LEFT {
+        Direction next() {
+            return UP;
+        }
+    };
 
     final static List<Direction> directions = List.of(UP, RIGHT, DOWN, LEFT);
+
+    abstract Direction next();
+
 }
 
 class Position {
@@ -166,18 +219,23 @@ class Position {
     }
 
     static Position of(int x, int y) {
-        return new Position(x, y);
+        return x >= SmartRobot.minX &&
+                x < SmartRobot.maxX &&
+                y >= SmartRobot.minY &&
+                y < SmartRobot.maxY
+                ? new Position(x, y)
+                : null;
     }
 
     public Position next(Direction direction) {
         if (direction == Direction.UP) {
-            return of(x, y + 1);
+            return of(x - 1, y);
         } else if (direction == Direction.DOWN) {
-            return of(x, y - 1);
-        } else if (direction == Direction.RIGHT) {
             return of(x + 1, y);
-        } else {
-            return of (x - 1, y);
+        } else if (direction == Direction.RIGHT) {
+            return of(x, y + 1);
+        } else { // Direction.LEFT
+            return of(x, y - 1);
         }
     }
 
@@ -198,19 +256,27 @@ class Position {
         result = 31 * result + y;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }
 
-interface Robot {
-    // returns true if next cell is open and robot moves into the cell.
-    // returns false if next cell is obstacle and robot stays on the current cell.
-    boolean move();
+class PositionPath implements Comparable<PositionPath> {
+    final Position position;
+    final int val;
 
-    // Robot will stay on the same cell after calling turnLeft/turnRight.
-    // Each turn will be 90 degrees.
-    void turnLeft();
-    void turnRight();
+    public PositionPath(Position position, int val) {
+        this.position = position;
+        this.val = val;
+    }
 
-    // Clean the current cell.
-    void clean();
-
+    @Override
+    public int compareTo(PositionPath other) {
+        return this.val - other.val;
+    }
 }
