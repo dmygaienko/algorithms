@@ -1,7 +1,7 @@
 package com.mygaienko.common.algorithms.leetcode.find_and_replace_in_string;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /**
  * 833. Find And Replace in String
@@ -9,47 +9,89 @@ import java.util.TreeMap;
  */
 class Solution {
 
+    /**
+     * Input:
+     * s = "abcd",
+     * indices = [0, 2],
+     * sources = ["a", "cd"],
+     * targets = ["eee", "ffff"]
+     *
+     * Output: "eeebffff"
+     * Explanation:
+     * "a" occurs at index 0 in s, so we replace it with "eee".
+     * "cd" occurs at index 2 in s, so we replace it with "ffff".
+     */
     public String findReplaceString(String s, int[] indices, String[] sources, String[] targets) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder result = new StringBuilder();
+        char[] chars = s.toCharArray();
 
-        Map<Integer, SourceTarget> map = new TreeMap<>();
-        for (int i = 0; i < indices.length; i++) {
-            map.put(indices[i], new SourceTarget(sources[i], targets[i]));
-        }
+        PriorityQueue<SourceTarget> sourceTargets = initQueue(indices, sources, targets);
 
-        int start = 0;
-        for (Map.Entry<Integer, SourceTarget> entry : map.entrySet()) {
-            int index = entry.getKey();
+        for (int i = 0; i < chars.length; i++) {
 
-            String substring = s.substring(start, index);
-            sb.append(substring);
+            if (!sourceTargets.isEmpty() && sourceTargets.peek().getIndex() == i) {
+                SourceTarget sourceTarget = sourceTargets.poll();
 
-            String source = entry.getValue().source;
-            int sourceSize = source.length();
-            String stringToReplace = s.substring(index, index + sourceSize);
+                String replaceSubstring = sourceTarget.getSource();
 
-            if (stringToReplace.equals(source)) {
-                sb.append(entry.getValue().target);
+                boolean replace = true;
+                int k = 0;
+                for (int i1 = i; k < replaceSubstring.length() && i1 < chars.length; k++, i1++) {
+                    char replaceChar = replaceSubstring.charAt(k);
+                    char initChar = s.charAt(i1);
+                    if (replaceChar != initChar) {
+                        replace = false;
+                    }
+                }
+
+                if (replace && k == replaceSubstring.length()) {
+                    result.append(sourceTarget.getTarget());
+                    i = i + replaceSubstring.length() - 1;
+                } else {
+                    result.append(chars[i]);
+                }
             } else {
-                sb.append(stringToReplace);
+                result.append(chars[i]);// if replaceIndex > i then ignore and increase i
             }
 
-            start = index + sourceSize;
         }
 
-        String substring = s.substring(start);
-        sb.append(substring);
+        return result.toString();
+    }
 
-        return sb.toString();
+    private PriorityQueue<SourceTarget> initQueue(int[] indices, String[] sources, String[] targets) {
+        PriorityQueue<SourceTarget> q = new PriorityQueue<>(indices.length, Comparator.comparingInt(SourceTarget::getIndex));
+        for (int i = 0; i < indices.length; i++) {
+            q.offer(new SourceTarget(
+                    indices[i],
+                    sources[i],
+                    targets[i]
+            ));
+        }
+        return q;
     }
 
     static class SourceTarget {
-        private String source;
-        private String target;
+        int index;
+        String source;
+        String target;
 
-        public SourceTarget(String source, String target) {
+        public SourceTarget(int index, String source, String target) {
+            this.index = index;
             this.source = source;
             this.target = target;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public String getTarget() {
+            return target;
         }
     }
 

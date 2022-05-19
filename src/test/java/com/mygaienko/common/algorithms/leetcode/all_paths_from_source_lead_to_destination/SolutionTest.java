@@ -9,6 +9,19 @@ public class SolutionTest {
     Solution solution = new Solution();
 
     @Test
+    public void test01() {
+        assertTrue(solution.leadsToDestination(4,
+                new int[][]{
+                        {0, 1},
+                        {0, 2},
+                        {1, 3},
+                        {2, 3}
+                },
+                0, 3)
+        );
+    }
+
+    @Test
     public void test0() {
         assertFalse(solution.leadsToDestination(4,
                 new int[][]{
@@ -62,6 +75,22 @@ public class SolutionTest {
                                 {18, 38}, {37, 23}, {5, 22}, {35, 23}, {14, 30}, {30, 30}, {13, 32}, {28, 23}, {24, 25}, {45, 2}, {25, 22}}
                 ,
                 15, 33)
+        );
+    }
+
+    @Test
+    public void test4() {
+        assertFalse(solution.leadsToDestination(7,
+                new int[][]{
+                        {0, 1},
+                        {0, 2},
+                        {1, 3},
+                        {2, 4},
+                        {3, 5},
+                        {4, 5},
+                        {2, 6}
+                },
+                0, 5)
         );
     }
 }

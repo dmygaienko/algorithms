@@ -4,43 +4,37 @@ import java.util.*;
 
 class Solution {
 
+    int NOT_PROCESSED = -1;
+    int PROCESSING = 0;
+    int PROCESSED = 1;
+
     public boolean leadsToDestination(int n, int[][] edges, int source, int destination) {
-        List[] adj = new List[n];
+        List<Integer>[] adj = new List[n];
         for (int i = 0; i < edges.length; i++) {
             int[] edge = edges[i];
             int from = edge[0];
             int to = edge[1];
-            if (from == to) {
-                return false;
-            }
             if (adj[from] == null) adj[from] = new ArrayList<>();
             adj[from].add(to);
         }
 
-        Deque<Integer> stack = new ArrayDeque<>();
-        stack.push(source);
+        int[] state = new int[n];
+        Arrays.fill(state, NOT_PROCESSED);
+        return leadsToDestination(state, adj, source, destination);
+    }
 
-        BitSet seen = new BitSet(n);
+    public boolean leadsToDestination(int[] state, List<Integer>[] adj, int source, int destination) {
+        if (state[source] != NOT_PROCESSED) return state[source] == PROCESSED; // loop detected
+        if (adj[source] == null || adj[source].isEmpty()) return source == destination;
 
-        while(!stack.isEmpty()) {
-            Integer next = stack.pop();
-            if (next == destination && adj[next]==null) {
-                seen.clear();
-                continue;
-            }
-
-            if (seen.get(next)) return false;
-            seen.set(next);
-
-            if (adj[next]==null) {
+        state[source] = PROCESSING;
+        for (Integer neighbour : adj[source]) {
+            if (!leadsToDestination(state, adj, neighbour, destination)) {
                 return false;
-            } else {
-                for (Object neighbor : adj[next]) {
-                    stack.push((Integer) neighbor);
-                }
             }
         }
 
+        state[source] = PROCESSED;
         return true;
     }
 

@@ -47,4 +47,19 @@ public class SolutionTest {
         assertEquals("vbfrssozp", actual);
     }
 
+    /**
+     * "abcde"
+     * [2,2]
+     * ["cdef","bc"]
+     * ["f","fe"]
+     */
+    @Test
+    public void testFindReplaceabcde() {
+        String actual = solution.findReplaceString("abcde",
+                new int[]{2,2},
+                new String[]{"cdef", "bc"},
+                new String[]{"f","fe"});
+        assertEquals("abcde", actual);
+    }
+
 }
