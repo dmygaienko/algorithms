@@ -1,6 +1,7 @@
 package com.mygaienko.common.algorithms.leetcode.android_unlock_patterns;
 
 /**
+ * excellent example: https://leetcode.com/problems/android-unlock-patterns/discuss/82464/Simple-and-concise-Java-solution-in-69ms
  * dfs, backtracking
  */
 class SolutionV2 {
