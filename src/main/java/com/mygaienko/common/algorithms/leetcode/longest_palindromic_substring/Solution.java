@@ -1,39 +1,47 @@
 package com.mygaienko.common.algorithms.leetcode.longest_palindromic_substring;
 
+import java.util.Arrays;
 
-public class Solution {
+class Solution {
 
     public String longestPalindrome(String s) {
+        if (s == null || s.length() == 0) return "";
 
-        int size = s.length();
+        int N = s.length();
 
-        int startIndex = -1;
-        int endIndex = -1;
+        boolean[][] dp = new boolean[N+1][N];
+        Arrays.fill(dp[1], true);
 
-        boolean[][] dp = new boolean[size][size];
+        int maxSize = 1;
+        int maxIndex = 0;
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j <= i; j++) {
+        for (int i = 2; i < dp.length; i++) {       // length growth
+            for (int j = 0; j < dp[0].length; j++) {   // over each char
 
-                char firstChar = s.charAt(j);
-                char secondChar = s.charAt(i);
-                boolean isSameChars = firstChar == secondChar;
-                int prevStart = j + 1;
-                int prevEnd = i - 1;
+                if (i==2) {
+                    if (j + 1 < dp[0].length && s.charAt(j) == s.charAt(j+1)) {
+                        dp[i][j] = true;
 
-                boolean isPal = ((prevStart <= prevEnd) && (prevEnd >= 0))
-                        ? (isSameChars && dp[prevStart][prevEnd])
-                        : isSameChars;
-
-                dp[j][i] = isPal;
-                if (isPal && (i - j) >= (endIndex-startIndex)) {
-                    startIndex = j;
-                    endIndex = i;
+                        if (i > maxSize) {
+                            maxSize = i;
+                            maxIndex = j;
+                        }
+                    }
                 }
+
+                if (i-2 > 0 && j + i - 1< dp[0].length && dp[i-2][j+1] && s.charAt(j) == s.charAt(j + i - 1)) {
+                    dp[i][j] = true;
+
+                    if (i > maxSize) {
+                        maxSize = i;
+                        maxIndex = j;
+                    }
+                }
+
             }
         }
 
-        return (startIndex != -1 && endIndex != -1) ? s.substring(startIndex, endIndex + 1) : "";
+        return s.substring(maxIndex, maxIndex + maxSize);
     }
 
 }
