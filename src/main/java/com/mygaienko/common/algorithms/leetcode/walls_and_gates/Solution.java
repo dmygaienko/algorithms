@@ -14,7 +14,7 @@ class Solution {
             for (int j = 0; j < rooms[0].length; j++) {
                 int next = rooms[i][j];
                 if (next ==  GATE) {
-                    queue.offer(new int[]{i, j, 0});
+                    queue.offer(new int[]{i, j});
                 }
             }
         }
@@ -23,27 +23,26 @@ class Solution {
             int[] current = queue.poll();
             int x = current[0];
             int y = current[1];
-            int distance = current[2];
-            if (rooms[x][y] > distance) {
-                rooms[x][y] = distance;
-            }
-
-            int nextDistance = distance + 1;
+            int nextDistance = rooms[x][y] + 1;
 
             if (x - 1 >= 0 && rooms[x - 1][y] > nextDistance) {
-                queue.offer(new int[]{x - 1, y, nextDistance});
+                rooms[x - 1][y] = nextDistance;
+                queue.offer(new int[]{x - 1, y});
             }
 
             if (x + 1 < rooms.length && rooms[x + 1][y] > nextDistance) {
-                queue.offer(new int[]{x + 1, y, nextDistance});
+                rooms[x + 1][y] = nextDistance;
+                queue.offer(new int[]{x + 1, y});
             }
 
             if (y - 1 >= 0 && rooms[x][y - 1] > nextDistance) {
-                queue.offer(new int[]{x, y - 1, nextDistance});
+                rooms[x][y - 1] = nextDistance;
+                queue.offer(new int[]{x, y - 1});
             }
 
             if (y + 1 < rooms[0].length && rooms[x][y + 1] > nextDistance) {
-                queue.offer(new int[]{x, y + 1, nextDistance});
+                rooms[x][y + 1] = nextDistance;
+                queue.offer(new int[]{x, y + 1});
             }
         }
     }
