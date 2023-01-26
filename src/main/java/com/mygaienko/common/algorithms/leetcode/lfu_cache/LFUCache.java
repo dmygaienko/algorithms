@@ -6,11 +6,11 @@ class LFUCache {
 
     private final Map<Integer, Integer> map;
     private final Map<Integer, Integer> keyToAge;
-    private final Map<Integer, Set<Integer>> ageToKeys;
+    private final Map<Integer, Deque<Integer>> ageToKeys;
     private final int capacity;
 
     public LFUCache(int capacity) {
-        map = new LinkedHashMap<>(capacity);
+        map = new HashMap<>(capacity);
         keyToAge = new HashMap<>(capacity);
         ageToKeys = new TreeMap<>();
         this.capacity = capacity;
@@ -37,12 +37,16 @@ class LFUCache {
 
     private void clear() {
         int oldKey = Integer.MIN_VALUE;
-        for (Map.Entry<Integer, Set<Integer>> entry : ageToKeys.entrySet()) {
-            Set<Integer> keys = entry.getValue();
-            Iterator<Integer> iterator = keys.iterator();
-            if (iterator.hasNext()) {
-                oldKey = iterator.next();
-                iterator.remove();
+        Iterator<Map.Entry<Integer, Deque<Integer>>> iterator = ageToKeys.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Deque<Integer>> entry = iterator.next();
+            Deque<Integer> keys = entry.getValue();
+
+            if (!keys.isEmpty()) {
+                oldKey = keys.poll();
+                if (keys.isEmpty()) {
+                    iterator.remove();
+                }
                 break;
             }
         }
@@ -59,13 +63,17 @@ class LFUCache {
     }
 
     private int recalculate(Integer key, Integer age) {
-        ageToKeys.get(age).remove(key);
+        Deque<Integer> keys = ageToKeys.get(age);
+        if (keys != null) {
+            keys.remove(key);
+        }
         return putAge(key, age + 1);
     }
 
     private int putAge(Integer key, Integer newAge) {
-        ageToKeys.putIfAbsent(newAge, new TreeSet<>());
-        ageToKeys.get(newAge).add(key);
+        ageToKeys.putIfAbsent(newAge, new ArrayDeque<>());
+        Deque<Integer> keys = ageToKeys.computeIfAbsent(newAge, k -> new ArrayDeque<>());
+        keys.add(key);
         return newAge;
     }
 

@@ -28,11 +28,30 @@ public class LFUCacheTest {
         assertThat(cache.get(4)).isEqualTo(4);
     }
 
-    @Test
+        @Test
     public void test0() {
         LFUCache cache = new LFUCache(0);
 
         cache.put(0, 0);
         assertThat(cache.get(0)).isEqualTo(-1);
+    }
+
+    /**
+     * ["LFUCache", "put",  "put",  "get",  "get",  "put",  "get",  "get",  "get"]
+     * [[2],        [2,1],  [3,2],  [3],    [2],    [4,3],  [2],    [3],    [4]]
+     * [null,       null,   null,   2,      1,      null,   1,      -1,     3]
+     */
+    @Test
+    public void test1() {
+        LFUCache cache = new LFUCache(2);
+
+        cache.put(2, 1);
+        cache.put(3, 2);
+        assertThat(cache.get(3)).isEqualTo(2);
+        assertThat(cache.get(2)).isEqualTo(1);
+        cache.put(4, 3);
+        assertThat(cache.get(2)).isEqualTo(1);
+        assertThat(cache.get(3)).isEqualTo(-1);
+        assertThat(cache.get(4)).isEqualTo(3);
     }
 }
