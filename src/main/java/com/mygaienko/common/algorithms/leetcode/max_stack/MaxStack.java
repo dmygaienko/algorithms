@@ -1,34 +1,26 @@
 package com.mygaienko.common.algorithms.leetcode.max_stack;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 class MaxStack {
 
     ArrayDeque<Integer> stack = new ArrayDeque<>();
-    PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(Comparator.reverseOrder());
-    Map<Integer, Integer> toDelete = new HashMap<>();
+    PriorityQueue<Integer> order = new PriorityQueue<>(Comparator.reverseOrder());
+
+    public MaxStack() {
+
+    }
 
     public void push(int x) {
-        clear();
-
         stack.push(x);
-        priorityQueue.offer(x);
+        order.offer(x);
     }
 
     public int pop() {
-        clear();
-
-        boolean trunc = false;
-        int popped = Integer.MIN_VALUE;
-        while (!trunc && !stack.isEmpty()) {
-            var poppedVal = stack.pop();
-            trunc = priorityQueue.remove(poppedVal);
-            if (trunc) {
-                popped = poppedVal;
-            }
-        }
-
-        clear();
+        Integer popped = stack.pop();
+        order.remove(popped);
         return popped;
     }
 
@@ -37,26 +29,14 @@ class MaxStack {
     }
 
     public int peekMax() {
-        clear();
-        return !priorityQueue.isEmpty() ? priorityQueue.peek() : Integer.MIN_VALUE;
+        return !order.isEmpty() ? order.peek() : Integer.MIN_VALUE;
     }
 
     public int popMax() {
-        clear();
-        int max = !priorityQueue.isEmpty() ? priorityQueue.poll() : Integer.MIN_VALUE;
+        int max = !order.isEmpty() ? order.poll() : Integer.MIN_VALUE;
         if (max == top()) {
-            stack.pop();
-        } else {
-            toDelete.compute(max, (k, v) ->  v == null ? 1 : v + 1);
+            pop();
         }
-        clear();
         return max;
-    }
-
-    private void clear() {
-        while(!stack.isEmpty() && toDelete.getOrDefault(stack.peek(), 0) > 0) {
-            Integer popped = stack.pop();
-            toDelete.compute(popped, (k, v) ->  v == 1 ? null : v - 1);
-        }
     }
 }
