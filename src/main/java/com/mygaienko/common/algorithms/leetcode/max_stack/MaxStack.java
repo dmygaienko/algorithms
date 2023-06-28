@@ -6,37 +6,61 @@ import java.util.PriorityQueue;
 
 class MaxStack {
 
-    ArrayDeque<Integer> stack = new ArrayDeque<>();
-    PriorityQueue<Integer> order = new PriorityQueue<>(Comparator.reverseOrder());
+    int DEFAULT = 0;
+    int TO_DELETE = 1;
 
-    public MaxStack() {
+    int count = 0;
 
-    }
+    final ArrayDeque<int[]> stack = new ArrayDeque<>();
+    final PriorityQueue<int[]> priorityQueue = new PriorityQueue<>(
+            Comparator.<int[]>comparingInt(arr -> arr[0])
+                    .thenComparingInt(arr -> arr[2]).reversed()
+                    .thenComparingInt(arr -> arr[1]));
 
     public void push(int x) {
-        stack.push(x);
-        order.offer(x);
+        clear();
+
+        int[] var = new int[]{x, DEFAULT, ++count};
+        stack.push(var);
+        priorityQueue.offer(var);
     }
 
     public int pop() {
-        Integer popped = stack.pop();
-        order.remove(popped);
+        clear();
+
+        var poppedVal = stack.pop();
+        priorityQueue.remove(poppedVal);
+        int popped = poppedVal[0];
+
+        clear();
         return popped;
     }
 
     public int top() {
-        return stack.peek();
+        clear();
+        return !stack.isEmpty() ? stack.peek()[0] : Integer.MIN_VALUE;
     }
 
     public int peekMax() {
-        return !order.isEmpty() ? order.peek() : Integer.MIN_VALUE;
+        clear();
+        return !priorityQueue.isEmpty() ? priorityQueue.peek()[0] : Integer.MIN_VALUE;
     }
 
     public int popMax() {
-        int max = !order.isEmpty() ? order.poll() : Integer.MIN_VALUE;
-        if (max == top()) {
-            pop();
-        }
+        clear();
+        if (priorityQueue.isEmpty()) return Integer.MIN_VALUE;
+
+        int[] maxVal = priorityQueue.poll();
+        int max = maxVal[0];
+        maxVal[1] = TO_DELETE;
+
+        clear();
         return max;
+    }
+
+    private void clear() {
+        while (!stack.isEmpty() && stack.peek()[1] == TO_DELETE) {
+            stack.pop();
+        }
     }
 }
