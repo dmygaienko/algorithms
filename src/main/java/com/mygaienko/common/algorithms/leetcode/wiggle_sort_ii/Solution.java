@@ -1,5 +1,7 @@
 package com.mygaienko.common.algorithms.leetcode.wiggle_sort_ii;
 
+import java.util.Random;
+
 class Solution {
 
     public void wiggleSort(int[] nums) {
@@ -57,8 +59,11 @@ class Solution {
             if (prevValue == nums[prevIndex] && nextValue == nums[indexToReplace]) {
                 if (prevIndex - 1 >= 0) {
                     softReplace(nums, prevIndex - 1, indexToReplace - 1, !greater);
-                    if (prevValue == nums[prevIndex] && nextValue == nums[indexToReplace]) {
-                        replace(nums, prevIndex, indexToReplace);
+                    if (prevValue == nums[prevIndex] && nextValue == nums[indexToReplace] ||
+                            (!greater && nums[indexToReplace-1] <= nextValue) ||
+                            (greater && nums[indexToReplace-1] >= nextValue)) {
+                        shuffle(nums);
+                        wiggleSort(nums);
                     }
                 } else {
                     replace(nums, prevIndex, indexToReplace);
@@ -104,6 +109,16 @@ class Solution {
         int temp = nums[currentIndex];
         nums[currentIndex] = nums[i];
         nums[i] = temp;
+    }
+
+    private void shuffle(int[] nums) {
+        Random random = new Random();
+        for (int i = 0; i < nums.length; i++) {
+            int nextIndex = random.nextInt(nums.length);
+            if ( i != nextIndex) {
+                replace(nums, i, nextIndex);
+            }
+        }
     }
 
 }
