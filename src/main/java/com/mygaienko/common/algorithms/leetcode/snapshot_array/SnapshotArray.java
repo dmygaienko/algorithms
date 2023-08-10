@@ -42,13 +42,29 @@ class SnapshotArray {
         if (isOriginal(snap_id)) {
             return snapshots.get(snap_id)[index];
         } else {
-            int localSnapId = snap_id;
-            while (!isOriginal(localSnapId)) {
-                Integer value = compactSnapshots.get(localSnapId).get(index);
-                if (value != null) return value;
-                localSnapId--;
+            int right = snap_id;
+            int left = snap_id - snap_id % SNAP_OPT;
+
+            Integer result = null;
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+
+                Integer lastVal;
+                if (!isOriginal(mid)) {
+                    lastVal = compactSnapshots.get(mid).get(index);
+                } else {
+                    return snapshots.get(mid)[index];
+                }
+
+                if (lastVal != null) {
+                    result = lastVal;
+                    left = mid;
+                } else {
+                    right = mid - 1;
+                }
             }
-            return snapshots.get(localSnapId)[index];
+
+            return result;
         }
     }
 
