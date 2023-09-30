@@ -1,48 +1,24 @@
 package com.mygaienko.common.algorithms.leetcode.similar_string_groups;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 class Solution {
 
     public int numSimilarGroups(String[] strs) {
-        List<Map<Character, Set<Integer>>> strings = new ArrayList();
-        for (var s : strs) {
-            var charIndex = new HashMap<Character, Set<Integer>>();
-            for (int i = 0; i < s.length(); i++) {
-                charIndex.computeIfAbsent(s.charAt(i), v -> new LinkedHashSet<>()).add(i);
-            }
-            strings.add(charIndex);
-        }
-        return findGroup(strings, strs.length);
-    }
+        UnionFind unionFind = new UnionFind(strs.length);
 
-    private int findGroup(List<Map<Character, Set<Integer>>> strings, int n) {
-        int alone = 0;
+        for (int i = 0; i < strs.length; i++) {
+            var curr = strs[i];
 
-        UnionFind unionFind = new UnionFind(n);
-
-        for (int i = 0; i < strings.size(); i++) {
-            var curr = strings.get(i);
-            var chars = curr.keySet();
-            boolean found = false;
-
-            for (int j = 0; j < strings.size(); j++) {
+            for (int j = 0; j < strs.length; j++) {
                 if (i == j) continue;
-                if (unionFind.isConnected(i, j)) {
-                    found = true;
-                    continue;
-                }
+                if (unionFind.isConnected(i, j)) continue;
 
-                var next = strings.get(j);
+                var next = strs[j];
                 var diff = 0;
-                for (var ch : chars) {
-                    if (!curr.get(ch).equals(next.get(ch))) {
+                for (int s = 0; s < curr.length(); s++) {
+                    if (curr.charAt(s) != next.charAt(s)) {
                         diff++;
                         if (diff > 2) {
                             break;
@@ -51,11 +27,7 @@ class Solution {
                 }
                 if (diff <= 2) {
                     unionFind.union(i, j);
-                    found = true;
                 }
-            }
-            if (!found) {
-                alone++;
             }
         }
         return unionFind.unique();

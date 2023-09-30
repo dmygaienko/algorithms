@@ -44,6 +44,18 @@ public int fn(int[] arr1, int[] arr2) {
     return ans;
 }
 ------------------------------------------------------
+Two pointers: reverse
+
+public static void reverse(int[] v, int N) {
+    int i = 0;
+    int j = N - 1;
+    while (i < j) {
+        swap(v, i, j);  // this is a self-defined function
+        i++;
+        j--;
+    }
+}
+------------------------------------------------------
 Sliding window
 
 public int fn(int[] arr) {
@@ -92,7 +104,7 @@ public int fn(ListNode head) {
     return ans;
 }
 ------------------------------------------------------
-Reversing a linked list
+Linked list: reversing
 
 public ListNode fn(ListNode head) {
     ListNode curr = head;
@@ -107,6 +119,40 @@ public ListNode fn(ListNode head) {
     return prev;
 }
 ------------------------------------------------------
+Linked list: merge with dummy pointer
+
+var mergeTwoLists = function(list1, list2) {
+
+    // using dummy head to avoid writing additional code for edge cases (e.g. list = null).
+    // using "new" keyword to create a new object. It makes the this variable point to the newly created object.
+	// p is the pointer of dummy, p1 is the pointer of list1, p2 is the pointer of list2
+    let dummy = new ListNode(0);
+    let p = dummy;
+    let p1 = list1;
+    let p2 = list2;
+
+    //   while both lists are not null.
+    while (p1 && p2 ){
+
+        // compare the number of nodes. insert the smaller node to the result
+        if (p1.val > p2.val){
+            p.next = p2;
+            p2 = p2.next;
+        }else{
+            p.next = p1;
+            p1 = p1.next;
+        }
+
+        // move the pointer to the next one
+        p = p.next;
+    }
+
+    // if every node of one list has been traversaled, we will insert the rest of the other list to the result
+    p.next = p1 || p2;
+    return dummy.next;
+};
+------------------------------------------------------
+
 Find number of subarrays that fit an exact criteria
 
 public int fn(int[] arr, int k) {
@@ -816,6 +862,212 @@ class UnionFind {
 
     public boolean connected(int x, int y) {
         return find(x) == find(y);
+    }
+}
+------------------------------------------------------
+Merge sort
+
+public static void mergeSort(int[] a, int n) {
+    if (n < 2) {
+        return;
+    }
+    int mid = n / 2;
+    int[] l = new int[mid];
+    int[] r = new int[n - mid];
+
+    for (int i = 0; i < mid; i++) {
+        l[i] = a[i];
+    }
+    for (int i = mid; i < n; i++) {
+        r[i - mid] = a[i];
+    }
+    mergeSort(l, mid);
+    mergeSort(r, n - mid);
+
+    merge(a, l, r, mid, n - mid);
+}
+
+public static void merge(
+  int[] a, int[] l, int[] r, int left, int right) {
+
+    int i = 0, j = 0, k = 0;
+    while (i < left && j < right) {
+        if (l[i] <= r[j]) {
+            a[k++] = l[i++];
+        }
+        else {
+            a[k++] = r[j++];
+        }
+    }
+    while (i < left) {
+        a[k++] = l[i++];
+    }
+    while (j < right) {
+        a[k++] = r[j++];
+    }
+}
+------------------------------------------------------
+Quick sort
+
+public void quickSort(int arr[], int begin, int end) {
+    if (begin < end) {
+        int partitionIndex = partition(arr, begin, end);
+
+        quickSort(arr, begin, partitionIndex-1);
+        quickSort(arr, partitionIndex+1, end);
+    }
+}
+
+private int partition(int arr[], int begin, int end) {
+    int pivot = arr[end];
+    int i = (begin-1);
+
+    for (int j = begin; j < end; j++) {
+        if (arr[j] <= pivot) {
+            i++;
+
+            int swapTemp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = swapTemp;
+        }
+    }
+
+    int swapTemp = arr[i+1];
+    arr[i+1] = arr[end];
+    arr[end] = swapTemp;
+
+    return i+1;
+}
+------------------------------------------------------
+Counting sort
+
+public void countingSort(int[] arr) {
+    // Sorts an array of integers where minimum value is 0 and maximum value is K
+    int K = Arrays.stream(arr).max().getAsInt();
+    int[] counts = new int[K + 1];
+    for (int elem : arr) {
+        counts[elem] += 1;
+    }
+    // we now overwrite our original counts with the starting index
+    // of each element in the final sorted array
+    int startingIndex = 0;
+    for (int i = 0; i < K + 1; i++) {
+        int count = counts[i];
+        counts[i] = startingIndex;
+        startingIndex += count;
+    }
+
+    int sortedArray[] = new int[arr.length];
+    for (int elem : arr) {
+        sortedArray[counts[elem]] = elem;
+        // since we have placed an item in index counts[elem], we need to
+        // increment counts[elem] index by 1 so the next duplicate element
+        // is placed in appropriate index
+        counts[elem] += 1;
+    }
+
+    // common practice to copy over sorted list into original arr
+    // it's fine to just return the sortedArray at this point as well
+    for (int i = 0; i < arr.length; i++) {
+        arr[i] = sortedArray[i];
+    }
+}
+------------------------------------------------------
+Radix sort
+
+public void initializeSortedArray(int size) {
+    if (mSortedArray == null) {
+        mSortedArray = new int[size];
+    }
+}
+
+public void countingSort(int[] arr, int placeVal) {
+    // Sorts an array of integers where minimum value is 0 and maximum value is K
+    int[] counts = new int[K];
+
+    for (int elem : arr) {
+        int current = elem / placeVal;
+        counts[current % NUM_DIGITS] += 1
+    }
+
+    // we now overwrite our original counts with the starting index
+    // of each digit in our group of digits
+    int startingIndex = 0;
+    for (int i = 0; i < mCounts.length; i++) {
+        int count = counts[i];
+        counts[i] = startingIndex;
+        startingIndex += count;
+    }
+
+    int[] sortedArray = new int[arr.length];
+    for (int elem : arr) {
+        int current = elem / placeVal;
+        sortedArray[counts[current % NUM_DIGITS]] = elem;
+        // since we have placed an item in index mCounts[current % NUM_DIGITS],
+        // we need to increment mCounts[current % NUM_DIGITS] index by 1 so the
+        // next duplicate digit is placed in appropriate index
+        counts[current % NUM_DIGITS] += 1;
+    }
+
+    // common practice to copy over sorted list into original arr
+    // it's fine to just return the sortedArray at this point as well
+    for (int i = 0; i < arr.length; i++) {
+        arr[i] = sortedArray[i];
+    }
+}
+
+public void radixSort(int[] arr) {
+    int maxElem = Integer.MIN_VALUE;
+    for (int elem : arr) {
+        if (elem > maxElem) {
+            maxElem = elem;
+        }
+    }
+
+    int placeVal = 1;
+    while (maxElem / placeVal > 0) {
+        countingSort(arr, placeVal);
+        placeVal *= 10;
+    }
+}
+------------------------------------------------------
+Bucket sort
+
+public void bucketSort(int[] arr, int K) {
+    List<List<Integer>> buckets = new ArrayList<ArrayList<Integer>>(K);
+    int shift = Arrays.stream(arr).min().getAsInt();
+    int maxValue = Arrays.stream(arr).max().getAsInt() - shft;
+    // place elements into buckets
+    double bucketSize = (double) maxValue / K;
+    if (bucketSize < 1) {
+        bucketSize = 1.0;
+    }
+    for (int elem : arr) {
+        // same as K * arr[i] / max(lst)
+        int index = (int) (elem - shift) / bucketSize;
+        if (index == K) {
+            // put the max value in the last bucket
+            buckets[K - 1].add(elem);
+        } else {
+            buckets[index].add(elem);
+        }
+    }
+
+    // sort individual buckets
+    for (List<Integer> bucket : buckets) {
+        Collections.sort(bucket);
+    }
+
+    // convert sorted buckets into final output
+    List<Integer> sortedList = new ArrayList<Integer>();
+    for (List<Integer> bucket : buckets) {
+        sortedList.addAll(bucket);
+    }
+
+    // perfectly fine to just return sortedList here
+    // but common practice is to mutate original array with sorted elements
+    for (int i = 0; i < arr.length; i++) {
+        arr[i] = sortedList.get(i);
     }
 }
 ------------------------------------------------------
