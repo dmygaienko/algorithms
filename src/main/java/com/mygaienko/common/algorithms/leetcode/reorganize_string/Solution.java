@@ -1,53 +1,56 @@
 package com.mygaienko.common.algorithms.leetcode.reorganize_string;
 
-import java.util.LinkedList;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 class Solution {
 
-    // iterate over characters with two points
-    // find same chars
-    // try to find new position before current index
-    // try to find new position after current index
-    // if not find new position return ""
+    /**
+     * iterate over string and count char occurence in map
+     * put char with occurence more than 2 to the priority queue
+     */
     public String reorganizeString(String s) {
-        Character prev = null;
-        Character curr = null;
-        LinkedList<Character> reorganized = new LinkedList<>();
-        LinkedList<Character> bench = new LinkedList<>();
-        for (int i = 0; i < s.length(); i++) {
-            if (prev == null) {
-                prev = s.charAt(i);
-                reorganized.add(prev);
-                continue;
-            } else {
-                curr = s.charAt(i);
-            }
 
-            if (prev == curr) {
-                findPlace(reorganized, i, curr, bench);
-            } else {
-                reorganized.add(curr);
-            }
-
-            if (!bench.isEmpty() && bench.peek() != curr) {
-                var fromBench = bench.pop();
-                reorganized.add(fromBench);
-                curr = fromBench;
-            }
-
-            prev = curr;
+        var charCounts = new int[26];
+        for (char c : s.toCharArray()) {
+            charCounts[c - 'a']++;
         }
+
+        var queue = new PriorityQueue<>(Comparator.<Pair<Character, Integer>>comparingInt(Pair::getValue).reversed());
+
+        for (int i = 0; i < charCounts.length; i++) {
+            var count = charCounts[i];
+            if (count == 0) continue;
+            char ch = (char) (i + 'a');
+            queue.offer(Pair.of(ch, count));
+        }
+
         var sb = new StringBuilder();
-        reorganized.forEach(sb::append);
-        return bench.isEmpty() ? sb.toString() : "";
+        while (queue.size() > 1) {
+            var curr = queue.poll();
+            var next = queue.poll();
+
+            sb.append(curr.getKey());
+            sb.append(next.getKey());
+
+            offerPositive(queue, curr);
+            offerPositive(queue, next);
+        }
+
+        if (queue.size() == 1 && queue.peek().getValue() == 1) {
+            sb.append(queue.poll().getKey());
+        }
+
+        return queue.isEmpty() ? sb.toString() : "";
     }
 
-    private void findPlace(LinkedList<Character> reorganized, int index, char ch,
-                           LinkedList<Character> bench) {
-        if (reorganized.get(0) != ch) {
-            reorganized.addFirst(ch);
-        } else {
-            bench.push(ch);
+    public void offerPositive(PriorityQueue<Pair<Character, Integer>> queue, Pair<Character, Integer> pair) {
+        if (pair.getValue() - 1 != 0) {
+            queue.offer(Pair.of(pair.getKey(), pair.getValue() - 1));
         }
     }
 
