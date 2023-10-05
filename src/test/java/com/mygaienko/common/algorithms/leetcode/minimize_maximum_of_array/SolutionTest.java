@@ -14,4 +14,17 @@ public class SolutionTest {
         assertThat(actual).isEqualTo(5);
     }
 
+    @Test
+    public void test13() {
+        int actual = solution.minimizeArrayValue(new int[]{13,13,20,0,8,9,9});
+        assertThat(actual).isEqualTo(16);
+    }
+
+
+    @Test
+    public void test11() {
+        int actual = solution.minimizeArrayValue(new int[]{6,9,3,8,14});
+        assertThat(actual).isEqualTo(8);
+    }
+
 }
