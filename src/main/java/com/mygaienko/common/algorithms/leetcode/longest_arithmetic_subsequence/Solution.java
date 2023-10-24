@@ -1,9 +1,14 @@
 package com.mygaienko.common.algorithms.leetcode.longest_arithmetic_subsequence;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 class Solution {
+
+    int[] nums;
+    Map<Integer, TreeSet<Integer>> numIndexes;
+    int[][] memo;
 
     // find min, max N
     // put element to map (num per index) N
@@ -16,14 +21,14 @@ class Solution {
     // return max
 
     public int longestArithSeqLength(int[] nums) {
+        this.nums = nums;
+        this.numIndexes = new HashMap<>();
+        this.memo = new int[nums.length][nums.length];
 
-        var numIndexes = new HashMap<Integer, TreeSet<Integer>>();
         for (int i = 0; i < nums.length; i++) {
             var val = nums[i];
             numIndexes.computeIfAbsent(val, v -> new TreeSet<>()).add(i);
         }
-
-        int[][] memo = new int[nums.length][nums.length];
 
         int maxLength = 0;
         for (int i = 0; i < nums.length; i++) {
@@ -32,25 +37,7 @@ class Solution {
                 currLength = 2;
                 var step = nums[j] - nums[i];
 
-                Integer nextIndex = j;
-                Integer nextNum = null;
-
-                while (nextNum == null || nextIndex != null) {
-
-                    if (nextNum == null) {
-                        nextNum = nums[j] + step;
-                    } else {
-                        nextNum = nextNum + step;
-                    }
-
-                    var indexes = numIndexes.get(nextNum);
-                    nextIndex = indexes == null ? null : indexes.higher(nextIndex);
-
-                    if (nextIndex != null) {
-                        currLength++;
-                    }
-
-                }
+                currLength += dp(j, step);
 
                 maxLength = Math.max(maxLength, currLength);
             }
@@ -58,4 +45,25 @@ class Solution {
 
         return maxLength;
     }
+
+    private int dp(int index, int step) {
+        Integer nextNum = nums[index] + step;
+        var indexes = numIndexes.get(nextNum);
+        Integer nextIndex = indexes == null ? null : indexes.higher(index);
+
+        var currLength = 0;
+        if (nextIndex != null) {
+            var memoed = memo[index][nextIndex];
+            if (memoed != 0) {
+                return memoed;
+            }
+
+            currLength = 1 + dp(nextIndex, step);
+
+            memo[index][nextIndex] = currLength;
+        }
+
+        return currLength;
+    }
+
 }
