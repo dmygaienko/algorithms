@@ -1071,3 +1071,11 @@ public void bucketSort(int[] arr, int K) {
     }
 }
 ------------------------------------------------------
+Bitwise operation: extract bit
+
+var numIBit = (num >> i) & 1;
+------------------------------------------------------
+Bitwise operation: add bit
+
+single = single | (bitValue << i);
+------------------------------------------------------
