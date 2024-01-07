@@ -27,3 +27,14 @@ subsets:
 [],[3],[5],[6],[7],[3,5],[3,6],[3,7],[5,6],[5,7],[6,7],[3,5,6],[3,5,7],.[3,6,7],[5,6,7],[3,5,6,7]
 The total number of subsets for an array of n elements is also given by 2^n. (empty)
 ---------------------------------------------------------------------------------------------------
+Problems:
+
+Subsets
+Subsets II
+Permutations
+Permutations II
+Combinations
+Combination Sum II
+Combination Sum III
+Palindrome Partition
+---------------------------------------------------------------------------------------------------
