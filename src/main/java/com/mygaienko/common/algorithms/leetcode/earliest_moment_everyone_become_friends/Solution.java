@@ -7,7 +7,18 @@ class Solution {
 
     private static final int NOT_FOUND = -1;
 
+    public int[] sortTransformedArray(int[] nums, int a, int b, int c) {
+        Arrays.sort(nums, (n1, n2) -> apply(n1, a, b, c) - apply(n2, a, b, c));
+        return nums;
+    }
+
+    private int apply(Integer n, int a, int b, int c) {
+        return 0;
+    }
+
     public int earliestAcq(int[][] logs, int n) {
+
+
         Arrays.sort(logs, Comparator.comparingInt(log -> log[0]));
         UnionFind unionFind = new UnionFind(n);
         for (int i = 0; i < logs.length; i++) {
