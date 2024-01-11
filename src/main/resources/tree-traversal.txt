@@ -1,0 +1,17 @@
+Preorder Tree Traversal
+
+1. visit root
+2. preorder(root.left)
+3. preorder(root.right)
+
+Inorder Tree Traversal
+
+1. inorder(root.left)
+2. visit root
+3. inorder(root.right)
+
+Postorder Tree Traversal
+
+1. postorder(root.left)
+2. postorder(root.right)
+3. visit root
