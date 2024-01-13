@@ -1090,6 +1090,17 @@ private int[] getBitsArray(int val) {
     return bits;
 }
 ------------------------------------------------------
+Biwise operator: Bit count of a number (Brian Kernighan’s algorithm)
+
+private int countSetBits(int mask) {
+    var count = 0;
+    while (mask != 0) {
+        mask = mask & (mask - 1);
+        count++;
+    }
+    return count;
+}
+------------------------------------------------------
 Bitwise operation: is power of 2
 (n > 0 && (n & (n - 1)) == 0)
 ------------------------------------------------------
