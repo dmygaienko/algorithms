@@ -1,5 +1,7 @@
 package com.mygaienko.common.algorithms.leetcode.preorder_traversal;
 
+import com.mygaienko.common.algorithms.leetcode.common.TreeNode;
+
 import java.util.LinkedList;
 import java.util.List;
 
