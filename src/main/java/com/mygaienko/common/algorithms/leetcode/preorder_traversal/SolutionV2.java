@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Morris traversal
+ * explanation https://leetcode.com/problems/two-sum-bsts/editorial/?envType=featured-list&envId=leetcode-curated-algo-170?envType=featured-list&envId=leetcode-curated-algo-170
  */
 class SolutionV2 {
     public List<Integer> preorderTraversal(TreeNode root) {
