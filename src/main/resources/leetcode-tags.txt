@@ -5,6 +5,7 @@ rolling hash
 binary search
 sorting
 line sweep
+Shunting Yard algorithm
 
 # Graph
 union find
