@@ -1,4 +1,4 @@
-package com.mygaienko.common.algorithms.leetcode.basic_calculator_ii;
+package com.mygaienko.common.algorithms.leetcode.basic_calculator;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -6,7 +6,7 @@ import java.util.Set;
 
 class Solution {
 
-    Set<Character> operators = Set.of('-', '+', '*', '/');
+    Set<Character> lowPriority = Set.of('+', '-');
 
     public int calculate(String s) {
         var queue = new ArrayDeque<Character>();
@@ -24,25 +24,27 @@ class Solution {
             var nextChar = queue.poll();
             if (Character.isDigit(nextChar)) {
                 number = number * 10 + Character.getNumericValue(nextChar);
-            } else if (operators.contains(nextChar)) {
-                apply(stack, prevOperation, number);
-                prevOperation = nextChar;
-                number = 0;
+            } else {
+                if (nextChar == '(') {
+                    number = calculate(queue);
+                } else if (lowPriority.contains(nextChar)) {
+                    eval(stack, prevOperation, number);
+                    prevOperation = nextChar;
+                    number = 0;
+                } else if (nextChar == ')') {
+                    break;
+                }
             }
         }
-        apply(stack, prevOperation, number);
+        eval(stack, prevOperation, number);
         return stack.stream().mapToInt(a -> a).sum();
     }
 
-    private void apply(ArrayDeque<Integer> stack, char operation, int number) {
-        if (operation == '-') {
-            stack.push(-number);
-        } else if (operation == '+') {
+    private void eval(ArrayDeque<Integer> stack, Character operation, int number) {
+        if (operation == '+') {
             stack.push(number);
-        } else if (operation == '*') {
-            stack.push(stack.pop() * number);
-        } else if (operation == '/') {
-            stack.push(stack.pop() / number);
+        } else if (operation == '-') {
+            stack.push(-number);
         }
     }
 
