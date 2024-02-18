@@ -6,6 +6,8 @@ binary search
 sorting
 line sweep
 Shunting Yard algorithm
+Fenwick Tree (Binary Index Tree)
+Segment Tree
 
 # Graph
 union find
