@@ -4,12 +4,15 @@ Preorder Tree Traversal
 2. preorder(root.left)
 3. preorder(root.right)
 
+------------------------------------------------------------
 Inorder Tree Traversal
+(Inorder traversal of BST gives you sorted array for O(n) time)
 
 1. inorder(root.left)
 2. visit root
 3. inorder(root.right)
 
+------------------------------------------------------------
 Postorder Tree Traversal
 
 1. postorder(root.left)
