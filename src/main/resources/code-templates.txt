@@ -514,6 +514,12 @@ public TrieNode buildTrie(String[] words) {
     return root;
 }
 ------------------------------------------------------
+Adjacency list
+Map<Integer, List<Pair<Integer, Integer>>> adj = new HashMap<>()
+Map<Integer, List<int[]>> adj = new HashMap<>()
+Map<Integer, HashMap<Integer,Integer>> adjList = new HashMap<>();
+Map<Integer, List<int[]>> adjList = new HashMap<>();
+------------------------------------------------------
 Dijkstra's algorithm
 
 int[] distances = new int[n];
