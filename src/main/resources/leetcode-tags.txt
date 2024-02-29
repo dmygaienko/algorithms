@@ -20,7 +20,9 @@ Bellman-Ford algorithm (find shortest path distances with at most k edges with d
     calc at most K or (N-1) times for each edge dp[step][dest] = min(dp[step][dest], dp[step-1][src] + cost)
 Dijkstra's algorithm (find shortest path distances from a single source vertex to all other vertices)
     adjacency list + priority queue + int[] dist
-convex hull
+Convex hull
+    Graham's scan
+    Jalvis algorithm
 
 # Heap
     max-heap [5,4,3,2,1] for top k lowest elements in a loop compare with peek element if i-th is lower then replace

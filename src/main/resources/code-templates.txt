@@ -1122,3 +1122,81 @@ private int reverse(int num) {
     return result;
 }
 ------------------------------------------------------
+Grahams scan
+
+    public int[][] outerTrees(int[][] trees) {
+        // find lowest left point
+        var minX = Integer.MAX_VALUE;
+        var minY = Integer.MAX_VALUE;
+        var minI = 0;
+        for (int i = 0; i < trees.length; i++) {
+            var point = trees[i];
+            var x = point[0];
+            var y = point[1];
+            if (minY > y || (minY == y && minX > x)) {
+                minY = y;
+                minX = x;
+                minI = i;
+            }
+        }
+
+        //swap the bottommost point with the first point
+        swap(trees, 0, minI);
+
+        var p0 = trees[0];
+        //sort points based on polar angle with respect to the first point
+        Arrays.sort(trees, 1, trees.length, (p1, p2) -> {
+            int o = orientation(p0, p1, p2);
+            if (o == 0) {
+                return (distSq(p0, p2) >= distSq(p0, p1)) ? -1 : 1;
+            }
+            return (o == 2) ? -1 : 1;
+        });
+
+        //create an empty stack and push first three point
+        var stack = new Stack<int[]>();
+        stack.push(trees[0]);
+        stack.push(trees[1]);
+        stack.push(trees[2]);
+
+        //process remaining n - 3 points
+        for (int i = 3; i < trees.length; i++) {
+            while (stack.size() > 1 && orientation(nextToTop(stack), stack.peek(), trees[i]) != 2) {
+                stack.pop();
+            }
+            stack.push(trees[i]);
+        }
+
+        var result = new int[stack.size()][2];
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            result[i] = stack.pop();
+        }
+        return result;
+
+    }
+
+    private int[] nextToTop(Stack<int[]> stack) {
+        var top = stack.pop();
+        var next = stack.peek();
+        stack.push(top);
+        return next;
+    }
+
+    private int orientation(int[] p0, int[] p1, int[] p2) {
+        var val = (p1[1] - p0[1]) * (p2[0] - p1[0]) -
+                (p1[0] - p0[0]) * (p2[1] - p1[1]);
+
+        if (val == 0) return 0; // Collinear
+        return (val > 0) ? 1 : 2; // Clockwise or Counterclockwise
+    }
+
+    private int distSq(int[] p0, int[] p1) {
+        return (int) (Math.pow(p1[1] - p0[1], 2) + Math.pow(p1[0] - p0[0], 2));
+    }
+
+    private void swap(int[][] trees, int a, int b) {
+        var temp = trees[a];
+        trees[a] = trees[b];
+        trees[b] = temp;
+    }
+------------------------------------------------------
