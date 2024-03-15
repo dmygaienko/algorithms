@@ -24,6 +24,9 @@ Convex hull
     Graham's scan
     Jalvis algorithm
 
+# Matrix
+2D Binary Search
+
 # Heap
     max-heap [5,4,3,2,1] for top k lowest elements in a loop compare with peek element if i-th is lower then replace
     min-heap [1,2,3,4,5] for top k largest elements in a loop  compare with peek element if i-th is larger then replace
