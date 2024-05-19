@@ -32,7 +32,7 @@ Convex hull
     min-heap [1,2,3,4,5] for top k largest elements in a loop  compare with peek element if i-th is larger then replace
 
 # Monotonic stack - keep stack in order, elements that not confirmed to the order are pop out
-    decreased (from bottom to top) monotonic stack
+    decreasing (from bottom to top) monotonic stack
         goal - element that popped of the stack and next element -> allows to find next greater value to the right
              - element underneath is the next greater element to the left
 
@@ -40,13 +40,17 @@ Convex hull
         To push 3, we need to pop all smaller (or equal) elements first
         After: [5,4,3]
 
-    increased monotonic stack
+    increasing monotonic stack
         goal - element that popped of the stack and next element -> allows to find next smaller value to the right
              - element underneath is the next greater element to the left
 
         Before: [1,2,4,5]
         To push 3, we need to pop all greater (or equal) elements first
         After: [1,2,3]
+
+        If the stack becomes empty at the time of removal of an item, it indicates that the outgoing item is the smallest item seen so far.
+        Also note that once the process is complete, the stack contains a series of items sorted in increasing order.
+        These are also the items that have no smaller items after themselves. And their previous smaller items are stored right below them in the stack.
 
 # Monotonic queue
 
